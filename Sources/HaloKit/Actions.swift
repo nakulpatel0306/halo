@@ -53,9 +53,11 @@ public struct ActionInfo: Identifiable, Hashable, Sendable {
     public let keys: KeyCombo?
     /// Opened in the browser, for app actions that are just a page.
     public let link: URL?
+    /// Typed into the front app and run with Return, like a terminal command.
+    public let command: String?
 
     init(_ id: String, _ title: String, _ symbol: String, _ ring: RingKind, _ category: ActionCategory, _ detail: String,
-         keys: KeyCombo? = nil, link: String? = nil) {
+         keys: KeyCombo? = nil, link: String? = nil, command: String? = nil) {
         self.id = id
         self.title = title
         self.symbol = symbol
@@ -64,6 +66,7 @@ public struct ActionInfo: Identifiable, Hashable, Sendable {
         self.detail = detail
         self.keys = keys
         self.link = link.flatMap(URL.init(string:))
+        self.command = command
     }
 
     /// Opens a sub-ring of further choices instead of running.

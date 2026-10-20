@@ -79,7 +79,7 @@ struct GuidePane: View {
                     detail: "Select code files in Finder; they're copied as Markdown code blocks to paste into Claude.")
                 Divided()
                 Tip(symbol: "apple.terminal.fill", tint: .cyan, title: "Ghostty ring",
-                    detail: "Uses the keybinds in your Ghostty config: Claude Code (⇧⌘C), splits, Zoom Split, prompt jumps. Change your config? Update the ring in Ring Editor.")
+                    detail: "Ghostty's default shortcuts (splits, Zoom Split, prompt jumps) plus Claude Code, which types claude and runs it. Rebound a key? Update the slot in Ring Editor.")
                 Divided()
                 Tip(symbol: "cursorarrow.rays", tint: .brown, title: "Open in Cursor or VS Code",
                     detail: "Select a project folder or code file in Finder.")

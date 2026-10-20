@@ -1,4 +1,5 @@
 import AppKit
+import Carbon.HIToolbox
 import HaloKit
 
 /// Runs a chosen ring action and reports through the HUD.
@@ -32,6 +33,13 @@ final class ActionRunner {
         if let keys = info?.keys {
             guard requireAccessibility(at: point) else { return }
             return ContextReader.press(keys)
+        }
+        if let command = info?.command {
+            guard requireAccessibility(at: point) else { return }
+            // Pasted, then run with a real Return key, so the shell's bracketed
+            // paste can't swallow the newline.
+            await ContextReader.paste(command)
+            return ContextReader.press(KeyCombo(kVK_Return))
         }
         if let link = info?.link {
             NSWorkspace.shared.open(link)

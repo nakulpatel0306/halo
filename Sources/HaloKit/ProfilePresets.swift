@@ -56,14 +56,15 @@ public enum ProfilePresets {
         key("browser.bookmark", "Bookmark", "bookmark.fill", "Bookmark this page", K(kVK_ANSI_D, cmd)),
     ]
 
-    /// Matches the keybinds in ~/.config/ghostty/config.
+    /// Ghostty's default keybinds (`ghostty +list-keybinds --default`), so the
+    /// ring works without any config.
     static let ghostty: [ActionInfo] = [
-        key("ghostty.claude", "Claude Code", "sparkles", "Types claude and runs it", K(kVK_ANSI_C, shiftCmd)),
+        ActionInfo("ghostty.claude", "Claude Code", "sparkles", .general, .app, "Types claude and runs it", command: "claude"),
         key("ghostty.newTab", "New Tab", "plus.square.on.square", "New tab", K(kVK_ANSI_T, cmd)),
         key("ghostty.splitRight", "Split Right", "rectangle.split.2x1.fill", "Split right", K(kVK_ANSI_D, cmd)),
         key("ghostty.splitDown", "Split Down", "rectangle.split.1x2.fill", "Split down", K(kVK_ANSI_D, shiftCmd)),
         key("ghostty.zoom", "Zoom Split", "arrow.up.left.and.arrow.down.right", "Zoom the split", K(kVK_Return, shiftCmd)),
-        key("ghostty.equalize", "Equalize", "square.split.2x2.fill", "Even out the splits", K(kVK_ANSI_E, shiftCmd)),
+        key("ghostty.equalize", "Equalize", "square.split.2x2.fill", "Even out the splits", K(kVK_ANSI_Equal, [.control, .command])),
         key("ghostty.prevPrompt", "Prev Prompt", "arrow.up.to.line", "Jump to the previous prompt", K(kVK_UpArrow, cmd)),
         key("ghostty.nextPrompt", "Next Prompt", "arrow.down.to.line", "Jump to the next prompt", K(kVK_DownArrow, cmd)),
         key("ghostty.clear", "Clear", "clear.fill", "Clear the screen", K(kVK_ANSI_K, cmd)),

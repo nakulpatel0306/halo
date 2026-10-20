@@ -137,10 +137,11 @@ import Testing
         #expect(settings.profile(app: "com.microsoft.VSCode") == nil)
     }
 
-    @Test func ghosttyRingMatchesTheConfigKeybinds() {
-        #expect(ActionCatalog.info("ghostty.claude")?.keys?.display == "⇧⌘C")
+    @Test func ghosttyRingUsesGhosttyDefaults() {
+        #expect(ActionCatalog.info("ghostty.claude")?.command == "claude")
         #expect(ActionCatalog.info("ghostty.splitDown")?.keys?.display == "⇧⌘D")
         #expect(ActionCatalog.info("ghostty.zoom")?.keys?.display == "⇧⌘↩")
+        #expect(ActionCatalog.info("ghostty.equalize")?.keys?.display == "⌃⌘=")
     }
 
     @Test func libraryForTextRingHasTextAndGeneralActionsOnly() {
