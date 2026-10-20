@@ -47,6 +47,8 @@ echo "Built $APP"
 
 if [[ "${1:-}" == "--install" ]]; then
   pkill -x Halo 2>/dev/null || true
+  # Opening the new copy before the old one has quit fails with error -600.
+  while pgrep -x Halo >/dev/null; do sleep 0.2; done
   rm -rf /Applications/Halo.app
   cp -R $APP /Applications/Halo.app
   open /Applications/Halo.app
