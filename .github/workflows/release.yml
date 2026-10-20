@@ -17,6 +17,8 @@ jobs:
       - run: ./scripts/build-app.sh
         env:
           HALO_VERSION: ${{ github.ref_name }}
+          HALO_UNIVERSAL: 1
+      - run: lipo -info build/Halo.app/Contents/MacOS/Halo
       - run: ditto -c -k --keepParent build/Halo.app Halo.zip
       - run: gh release create "$GITHUB_REF_NAME" Halo.zip --title "Halo $GITHUB_REF_NAME" --notes-file .github/release-notes.md
         env:

@@ -8,12 +8,22 @@ VERSION=${HALO_VERSION:-v1.0.0}
 VERSION=${VERSION#v}
 APP=build/Halo.app
 
-swift build -c release
-BIN=$(swift build -c release --show-bin-path)
-
 rm -rf $APP
 mkdir -p $APP/Contents/{MacOS,Resources}
-cp $BIN/Halo $APP/Contents/MacOS/Halo
+
+if [[ -n "${HALO_UNIVERSAL:-}" ]]; then
+  # Releases run on Intel and Apple silicon. Building each architecture and
+  # joining them with lipo needs only the Command Line Tools, not Xcode.
+  BINARIES=()
+  for ARCH in arm64 x86_64; do
+    swift build -c release --triple $ARCH-apple-macosx14.0
+    BINARIES+=("$(swift build -c release --triple $ARCH-apple-macosx14.0 --show-bin-path)/Halo")
+  done
+  lipo -create $BINARIES -output $APP/Contents/MacOS/Halo
+else
+  swift build -c release
+  cp "$(swift build -c release --show-bin-path)/Halo" $APP/Contents/MacOS/Halo
+fi
 
 if [[ ! -f build/AppIcon.icns ]]; then
   swift scripts/make-icon.swift build/AppIcon.iconset

@@ -11,7 +11,7 @@ API bill.
 ## At a Glance
 
 - **Stack:** Swift, SwiftUI, AppKit, Vision, PDFKit, AVFoundation, the `claude` CLI (no external libraries)
-- **Platforms:** macOS 14+
+- **Platforms:** macOS 14+, Apple silicon and Intel
 - **State:** Complete
 
 ## Features
