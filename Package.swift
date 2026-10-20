@@ -8,6 +8,7 @@ let package = Package(
         // Everything that doesn't need a running app: settings model, the action
         // catalog, file operations, ring geometry and the Claude client.
         .target(name: "HaloKit"),
+        .executableTarget(name: "Halo", dependencies: ["HaloKit"]),
         .testTarget(name: "HaloKitTests", dependencies: ["HaloKit"]),
     ],
     swiftLanguageModes: [.v5]
