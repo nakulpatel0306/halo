@@ -323,6 +323,20 @@ final class ScratchDefaults {
         #expect(client.cliMessage(for: request).hasSuffix("/Users/me/Docs/a.pdf\n/Users/me/Docs/b.png"))
     }
 
+    @Test func cliOnlySeesCopiesInAPrivateFolder() throws {
+        let box = try Sandbox()
+        let a = box.folder.appendingPathComponent("notes.txt"), secret = box.folder.appendingPathComponent("secret.txt")
+        try "notes".write(to: a, atomically: true, encoding: .utf8)
+        try "secret".write(to: secret, atomically: true, encoding: .utf8)
+        let (request, folder) = try client.isolated(ClaudeRequest(system: "s", message: "m", files: [a]))
+        defer { try? FileManager.default.removeItem(at: folder!) }
+        #expect(request.files[0].lastPathComponent == "notes.txt")
+        #expect(request.files[0].deletingLastPathComponent().path == folder!.path)
+        #expect(try FileManager.default.contentsOfDirectory(atPath: folder!.path) == ["notes.txt"])
+        let args = client.cliArguments(for: request)
+        #expect(!args.contains(box.folder.path))
+    }
+
     @Test func apiSendsTextFilesInline() throws {
         let box = try Sandbox()
         let note = box.folder.appendingPathComponent("note.md")

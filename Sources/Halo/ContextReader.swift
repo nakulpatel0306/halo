@@ -32,22 +32,30 @@ enum ContextReader {
         NSWorkspace.shared.frontmostApplication?.bundleIdentifier
     }
 
+    static let terminals: Set = ["com.mitchellh.ghostty", "com.apple.Terminal", "com.googlecode.iterm2", "dev.warp.Warp-Stable"]
+
+    static var frontIsTerminal: Bool {
+        frontApp.map(terminals.contains) ?? false
+    }
+
     // MARK: Finder
 
     private static let finderScript = NSAppleScript(source: """
     tell application "Finder"
-        set out to ""
+        set out to {}
         repeat with f in (selection as alias list)
-            set out to out & POSIX path of f & linefeed
+            set end of out to POSIX path of f
         end repeat
         return out
     end tell
     """)
 
+    /// Read as a list rather than joined text, so a file name containing a
+    /// newline can't split into paths that were never selected.
     static func finderSelection() -> [URL] {
         var error: NSDictionary?
-        guard let output = finderScript?.executeAndReturnError(&error).stringValue else { return [] }
-        return output.split(separator: "\n").map { URL(fileURLWithPath: String($0)) }
+        guard let list = finderScript?.executeAndReturnError(&error), list.numberOfItems > 0 else { return [] }
+        return (1...list.numberOfItems).compactMap { list.atIndex($0)?.stringValue }.map { URL(fileURLWithPath: $0) }
     }
 
     // MARK: Text

@@ -142,6 +142,7 @@ public struct ClaudeClient: Sendable {
 
     /// Text requests get no tools at all. File requests get only Read, scoped to
     /// the folders the files are in, so Claude can look but never change anything.
+    /// `viaCLI` passes copies in a private folder, so that's all Read can reach.
     func cliArguments(for request: ClaudeRequest) -> [String] {
         var args = [
             "-p",
@@ -160,6 +161,24 @@ public struct ClaudeClient: Sendable {
         return args
     }
 
+    /// The request with its files copied into a new temporary folder. Names stay
+    /// the same so Claude's answers still refer to the right files.
+    func isolated(_ request: ClaudeRequest) throws -> (ClaudeRequest, URL?) {
+        guard !request.files.isEmpty else { return (request, nil) }
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("halo-read-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        var copies: [URL] = []
+        for (index, file) in request.files.enumerated() {
+            // Same-named files from different folders each get their own subfolder.
+            let dir = request.files.count == 1 ? folder : folder.appendingPathComponent(String(index + 1))
+            try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            let copy = dir.appendingPathComponent(file.lastPathComponent)
+            try FileManager.default.copyItem(at: file, to: copy)
+            copies.append(copy)
+        }
+        return (ClaudeRequest(system: request.system, message: request.message, files: copies), folder)
+    }
+
     func cliMessage(for request: ClaudeRequest) -> String {
         guard !request.files.isEmpty else { return request.message }
         return request.message + "\n\nRead these files:\n" + request.files.map(\.path).joined(separator: "\n")
@@ -167,6 +186,10 @@ public struct ClaudeClient: Sendable {
 
     func viaCLI(_ request: ClaudeRequest) async throws -> String {
         guard let cli = Self.findCLI() else { throw RewriteError.claudeCodeNotFound }
+        // A document could tell Claude to go read its neighbours, so Claude only
+        // gets a private folder holding copies of the selected files.
+        let (request, sandbox) = try isolated(request)
+        defer { if let sandbox { try? FileManager.default.removeItem(at: sandbox) } }
         // With an API key in the environment the CLI bills that key instead of
         // the subscription, which is the whole point of this provider.
         let result = try await Shell.run(cli, cliArguments(for: request), stdin: cliMessage(for: request),

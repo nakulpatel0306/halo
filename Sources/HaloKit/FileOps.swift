@@ -604,8 +604,9 @@ public enum FileOps {
         let out = urls.count == 1
             ? uniqueURL(in: folder, base: urls[0].deletingPathExtension().lastPathComponent, ext: "zip")
             : uniqueURL(in: folder, base: "Archive", ext: "zip")
-        // Relative names from the shared folder keep the archive free of absolute paths.
-        let names = urls.map(\.lastPathComponent)
+        // Relative names from the shared folder keep the archive free of absolute
+        // paths; the ./ stops a name like "-T" being read as a zip option.
+        let names = urls.map { "./" + $0.lastPathComponent }
         let result = try await Shell.run("/usr/bin/zip", ["-r", "-q", "-y", "-X", out.path] + names, cwd: source)
         guard result.status == 0 else { throw FileOpError.failed("zip failed: \(result.stderr)") }
         return out

@@ -147,7 +147,9 @@ final class ActionRunner {
         hud.show(.working(request.copiesResult ? "Thinking…" : "Rewriting…"), at: point)
         let result = try await client.ask(request.claude)
 
-        if request.copiesResult {
+        // Pasting into a terminal would run any line Claude's answer contains,
+        // so there it goes to the clipboard to be checked first.
+        if request.copiesResult || ContextReader.frontIsTerminal {
             copy(result)
             hud.update(.success("Copied to clipboard"))
         } else {

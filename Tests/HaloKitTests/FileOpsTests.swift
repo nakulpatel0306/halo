@@ -373,6 +373,14 @@ func pixelSize(_ url: URL) -> (Int, Int)? {
         #expect(contents == ["a.png", "b.png"])
     }
 
+    @Test func namesThatLookLikeOptionsAreZippedAsFiles() async throws {
+        let box = try Sandbox()
+        let tricky = try box.image("-T.png")
+        let zip = try await FileOps.zip([tricky])
+        let folder = try await FileOps.unzip(zip)
+        #expect(try FileManager.default.contentsOfDirectory(atPath: folder.path) == ["-T.png"])
+    }
+
     @Test func singleFileZipIsNamedAfterIt() async throws {
         let box = try Sandbox()
         let zip = try await FileOps.zip([try box.image("report.png")])
