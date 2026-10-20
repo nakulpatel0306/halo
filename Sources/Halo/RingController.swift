@@ -77,8 +77,10 @@ final class RingController {
         Task {
             let profile = settings.profile(app: app)
             // In an app with its own ring, an unreadable selection means "show
-            // the app ring", not "press ⌘C and copy the current line".
-            let context = await ContextReader.current(copying: settings.behavior.copyToReadSelection && profile == nil)
+            // the app ring", not "press ⌘C and copy the current line". Browsers
+            // are the exception: they never expose a selection any other way.
+            let canCopy = profile == nil || ContextReader.frontIsBrowser
+            let context = await ContextReader.current(copying: settings.behavior.copyToReadSelection && canCopy)
             loading = false
             show(context, target: model.target(for: context, profile: profile), caption: profile?.name, at: mouse)
         }

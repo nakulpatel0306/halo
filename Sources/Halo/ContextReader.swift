@@ -43,6 +43,14 @@ enum ContextReader {
         frontApp.map(terminals.contains) ?? false
     }
 
+    /// Browsers hide web page selections from Accessibility, so a Gmail draft
+    /// can only be read by copying. ⌘C with nothing selected copies nothing here.
+    static let browsers: Set = ["com.google.Chrome", "com.apple.Safari"]
+
+    static var frontIsBrowser: Bool {
+        frontApp.map(browsers.contains) ?? false
+    }
+
     // MARK: Finder
 
     private static let finderScript = NSAppleScript(source: """
