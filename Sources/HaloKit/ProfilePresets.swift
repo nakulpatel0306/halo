@@ -103,7 +103,13 @@ public enum ProfilePresets {
         key("zoom.people", "People", "person.2.fill", "Show participants", K(kVK_ANSI_U, cmd)),
     ]
 
-    public static let shortcuts = vscode + cursor + github + browser + ghostty + notion + obsidian + zoom
+    /// Read the open chat, so they work without a selection.
+    static let messages: [ActionInfo] = [
+        ActionInfo("messages.explain", "Explain", "questionmark.bubble.fill", .general, .ai, "What their last text, or the selection, means"),
+        ActionInfo("messages.summarize", "Sum Up Chat", "text.bubble.fill", .general, .ai, "Summarizes the open conversation"),
+    ]
+
+    public static let shortcuts = vscode + cursor + github + browser + ghostty + notion + obsidian + zoom + messages
 
     private static func ids(_ actions: [ActionInfo], take: Int = 8) -> [String] {
         actions.prefix(take).map(\.id)
@@ -121,6 +127,9 @@ public enum ProfilePresets {
         RingProfile(id: "preset.notion", name: "Notion", symbol: "doc.text.fill", apps: ["notion.id"], ring: ids(notion)),
         RingProfile(id: "preset.obsidian", name: "Obsidian", symbol: "point.3.connected.trianglepath.dotted", apps: ["md.obsidian"], ring: ids(obsidian)),
         RingProfile(id: "preset.zoom", name: "Zoom", symbol: "video.fill", apps: ["us.zoom.xos"], ring: ids(zoom)),
+        // Tone rewrites work on the message being typed, selected or not.
+        RingProfile(id: "preset.messages", name: "Messages", symbol: "message.fill", apps: [Apps.messages],
+                    ring: ids(messages) + ["text.flirty", "text.friendly", "text.serious", "text.funny", "text.fix", "text.concise"]),
     ]
 
     public static let defaults = all

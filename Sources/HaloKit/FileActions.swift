@@ -179,6 +179,7 @@ public enum Apps {
     public static let cursor = "com.todesktop.230313mzl4w4u92"
     public static let vscode = "com.microsoft.VSCode"
     public static let claude = "com.anthropic.claudefordesktop"
+    public static let messages = "com.apple.MobileSMS"
 
     public static func url(_ bundleID: String) -> URL? {
         NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)

@@ -38,8 +38,16 @@ final class AppModel: ObservableObject {
     /// The ring for what's selected; with nothing selected, the front app's
     /// own ring if it has one.
     func target(for context: RingContext, profile: RingProfile?) -> RingTarget {
-        if case .none = context, let profile { return .profile(profile.id) }
-        return .kind(context.ring)
+        guard let profile else { return .kind(context.ring) }
+        switch context {
+        case .none:
+            return .profile(profile.id)
+        // A ring built for writing, like Messages, beats the Text ring over a selection.
+        case .text where profile.ring.contains(where: { settings.info($0)?.ring == .text }):
+            return .profile(profile.id)
+        default:
+            return .kind(context.ring)
+        }
     }
 
     /// The ring's actions in the user's order, minus any that don't fit the selection.

@@ -27,6 +27,12 @@ public struct RewriteRequest: Sendable, Equatable {
             instruction = "Fix spelling, grammar and punctuation only. Keep the wording, tone and structure otherwise unchanged."
         case "text.friendly":
             instruction = "Make this warmer and more friendly while staying appropriate to send. Fix any spelling and grammar."
+        case "text.flirty":
+            instruction = "Make this flirty: playful, warm and a little teasing, confident without being cheesy or over the top. Keep it sounding like a real text from the writer, about the same length. Fix any spelling."
+        case "text.serious":
+            instruction = "Make this serious and sincere: calm, direct and respectful, with no jokes, emoji or filler. Keep everything the writer is saying."
+        case "text.funny":
+            instruction = "Make this funnier: add some wit or a light joke that fits, without changing the point or making it much longer. Keep it sounding like the writer."
         case "text.concise":
             instruction = "Say the same thing in noticeably fewer words. Keep every point that matters."
         case "text.bullets":

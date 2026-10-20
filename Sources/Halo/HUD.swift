@@ -8,6 +8,8 @@ final class HUD {
         case working(String)
         case success(String)
         case failure(String)
+        /// Claude's answer, shown long enough to read.
+        case answer(String)
     }
 
     @MainActor
@@ -39,7 +41,12 @@ final class HUD {
 
         guard case .working = status else {
             // Errors stay up longer so there's time to read them.
-            let delay: Double = if case .failure = status { max(4, successDuration) } else { successDuration }
+            let delay: Double = switch status {
+            case .failure: max(4, successDuration)
+            // About 15 characters a second, the pace of a careful read.
+            case let .answer(text): min(30, max(5, Double(text.count) / 15))
+            default: successDuration
+            }
             let work = DispatchWorkItem { [weak self] in self?.hide() }
             hideWork = work
             DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: work)
@@ -62,6 +69,10 @@ final class HUD {
 private struct HUDView: View {
     @ObservedObject var state: HUD.State
 
+    private var isAnswer: Bool {
+        if case .answer = state.status { true } else { false }
+    }
+
     var body: some View {
         HStack(spacing: 8) {
             switch state.status {
@@ -74,10 +85,13 @@ private struct HUDView: View {
             case let .failure(text):
                 Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
                 Text(text)
+            case let .answer(text):
+                Image(systemName: "sparkle").foregroundStyle(.purple)
+                Text(text)
             }
         }
         .font(.system(size: 12.5, weight: .medium))
-        .lineLimit(3)
+        .lineLimit(isAnswer ? 16 : 3)
         .frame(maxWidth: 360)
         .fixedSize(horizontal: false, vertical: true)
         .padding(.horizontal, 14)

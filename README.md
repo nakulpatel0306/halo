@@ -29,8 +29,10 @@ API bill.
 - **Filee-style conversions.** Convert ▸ offers only the formats a file can become:
   images, PDFs, Word/RTF/HTML/ODT, audio and video, all with macOS's built-in converters.
   Plus compress, resize, rotate, background removal, OCR, merge and split
+- **Messages ring.** Explain their last text, sum up the chat, or rewrite the message you're
+  typing as Flirty, Friendlier, Serious or Funnier, no highlighting needed
 - **App rings.** Cursor, VS Code, Ghostty (with a slot that starts Claude Code), Chrome &
-  Safari with GitHub links, Notion, Obsidian and Zoom, or any app you add
+  Safari with GitHub links, Notion, Obsidian, Zoom and Messages, or any app you add
 - **Drag-and-drop Ring Editor.** Drag tools from a library of 100+ onto any ring, swap
   slots, drag them off to remove
 - **Custom actions.** Claude prompts, recorded keyboard shortcuts, links, macOS Shortcuts,
@@ -53,6 +55,7 @@ API bill.
 │   │   ├── FileAI.swift         # Claude reads files: summaries, notes, flashcards, renames
 │   │   ├── ClaudeClient.swift   # claude CLI (subscription) or Messages API
 │   │   ├── Rewrite.swift        # Prompts for each text action
+│   │   ├── ChatAI.swift         # Prompts for Explain and Sum Up Chat in Messages
 │   │   ├── TextTools.swift      # Case, sort, JSON, Base64, URL and other local tools
 │   │   ├── ProfilePresets.swift # App rings and their shortcuts
 │   │   ├── Settings.swift       # Settings model and storage
@@ -62,6 +65,7 @@ API bill.
 │       ├── RingView.swift       # The ring itself
 │       ├── ActionRunner.swift   # Runs a chosen action and reports in the HUD
 │       ├── ContextReader.swift  # Reads the selection and pastes results back
+│       ├── MessagesReader.swift # Reads the open chat and the draft in Messages
 │       └── Settings/            # Guide, Ring Editor, App Rings and the other panes
 ├── Tests/HaloKitTests/          # Conversions, prompts, rings, settings and more
 └── scripts/
@@ -112,6 +116,9 @@ Run the tests with `./scripts/test.sh`.
 - Hold ⌥ Space, move toward an action and let go. Let go in the middle to cancel
 - Tap ⌥ Space to keep the ring open, then click. Esc closes
 - Slices with a ⋯ badge (Convert, Text Tools) open a sub-ring; click the middle to go back
+- In Messages, tone rewrites replace the whole message you're typing; Explain and Sum Up
+  Chat show their answer next to the ring. Updating from an older Halo? Settings > Apps >
+  Restore Presets adds the Messages ring
 - Rewrites replace your selection. Explain, Study Notes, Flashcards, Commit Msg and Review
   Code are copied to the clipboard
 - File results are saved as new files next to the original, never over it

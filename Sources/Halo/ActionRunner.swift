@@ -47,6 +47,12 @@ final class ActionRunner {
         }
 
         switch (id, context) {
+        case ("messages.explain", _), ("messages.summarize", _):
+            try await askAboutChat(id, context: context, at: point)
+
+        case (_, .none) where info?.ring == .text && info?.category == .ai && ContextReader.frontApp == Apps.messages:
+            try await rewriteDraft(id, at: point)
+
         case let (_, .text(text)) where info?.category == .ai:
             try await rewrite(id, text: text, at: point)
 
@@ -164,6 +170,25 @@ final class ActionRunner {
             hud.hide()
             await ContextReader.paste(result)
         }
+    }
+
+    /// Messages tone actions work on the whole message being typed when nothing is selected.
+    private func rewriteDraft(_ id: String, at point: NSPoint) async throws {
+        guard requireAccessibility(at: point) else { return }
+        guard let draft = MessagesReader.selectDraft() else {
+            throw FileOpError.failed("Type a message first, or select some text.")
+        }
+        try await rewrite(id, text: draft, at: point)
+    }
+
+    private func askAboutChat(_ id: String, context: RingContext, at point: NSPoint) async throws {
+        guard requireAccessibility(at: point) else { return }
+        let chat = MessagesReader.transcript()
+        guard !chat.isEmpty else { throw FileOpError.failed("Open a conversation in Messages first.") }
+        let selection: String? = if case let .text(text) = context { text } else { nil }
+        hud.show(.working("Reading the chat…"), at: point)
+        let request = id == "messages.summarize" ? ChatAI.summarize(chat) : ChatAI.explain(selection, chat: chat)
+        hud.update(.answer(try await client.ask(request)))
     }
 
     private func textTool(_ id: String, text: String, at point: NSPoint) async throws {

@@ -85,6 +85,11 @@ struct GuidePane: View {
                     detail: "Select a project folder or code file in Finder.")
             }
 
+            Card(title: "Texting") {
+                Tip(symbol: "message.fill", tint: .green, title: "Messages ring",
+                    detail: "Type a text, then pick Flirty, Friendlier, Serious or Funnier to rewrite it in place. Explain decodes their last text and Sum Up Chat recaps the conversation. Updating from an older Halo? Apps → Restore Presets adds it.")
+            }
+
             Card(title: "AI") {
                 Tip(symbol: "wand.and.rays", tint: ActionCategory.ai.color, title: "Better Prompt",
                     detail: "Highlight a rough request and it's rewritten in place as a clear prompt.")

@@ -127,6 +127,12 @@ import Testing
         #expect(settings.profile(app: "com.unknown.app") == nil)
     }
 
+    @Test func messagesRingHasChatAndToneActions() {
+        let ring = HaloSettings().profile(app: Apps.messages)?.ring ?? []
+        #expect(ring.starts(with: ["messages.explain", "messages.summarize"]))
+        #expect(["text.flirty", "text.friendly", "text.serious", "text.funny"].allSatisfy(ring.contains))
+    }
+
     @Test func disabledProfilesAndTheMasterSwitchAreRespected() {
         var settings = HaloSettings()
         let index = settings.profiles.firstIndex { $0.id == "preset.vscode" }!
@@ -267,6 +273,22 @@ final class ScratchDefaults {
         let prompt = try #require(RewriteRequest.forAction("text.promptPolish", text: "x", settings: settings))
         #expect(!prompt.copiesResult)
         #expect(try #require(RewriteRequest.forAction("text.commitMsg", text: "x", settings: settings)).instruction.contains("under 72"))
+    }
+
+    @Test func toneRewritesReplaceTheSelection() throws {
+        let settings = HaloSettings()
+        for id in ["text.flirty", "text.serious", "text.funny"] {
+            let request = try #require(RewriteRequest.forAction(id, text: "u up", settings: settings), "\(id)")
+            #expect(!request.copiesResult, "\(id)")
+        }
+    }
+
+    @Test func chatQuestionsCarryTheConversation() {
+        let chat = ["Sam, are we still on for 7?, 6:02 PM", "Your iMessage, yes!, 6:03 PM"]
+        let summary = ChatAI.summarize(chat)
+        #expect(summary.message.hasSuffix("<chat>\n\(chat[0])\n\(chat[1])\n</chat>"))
+        #expect(ChatAI.explain(nil, chat: chat).message.contains("most recent message"))
+        #expect(ChatAI.explain("ngl", chat: chat).message.contains("<selection>\nngl\n</selection>"))
     }
 
     @Test func answersAboutTheTextGoToTheClipboard() throws {
