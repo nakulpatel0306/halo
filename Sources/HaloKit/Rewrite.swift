@@ -22,7 +22,7 @@ public struct RewriteRequest: Sendable, Equatable {
         let instruction: String
         switch id {
         case "text.professional", "general.polishClipboard":
-            instruction = "Make this professional: clear, confident and polished, the way a capable person would write it at work. Fix spelling, grammar and sentence structure. Keep the writer's intent, facts and level of detail."
+            instruction = "Make this professional: clear, confident and polished, the way a capable person would write it at work. Fix spelling, grammar and sentence structure. Match the register the writer was going for: keep a serious message serious, and keep a light or playful one light, just cleaned up rather than turned stiff or formal. Keep the writer's intent, facts, level of detail and personality."
         case "text.fix":
             instruction = "Fix spelling, grammar and punctuation only. Keep the wording, tone and structure otherwise unchanged."
         case "text.friendly":

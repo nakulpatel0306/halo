@@ -1,5 +1,7 @@
 # Halo - A Radial Action Ring For Your Mac
 
+[![Downloads](https://img.shields.io/github/downloads/nakulpatel0306/halo/total?label=downloads)](https://github.com/nakulpatel0306/halo/releases)
+
 Hold **⌥ Space** anywhere, flick toward an action and let go. Halo opens a ring of
 actions at your cursor that fits whatever you're pointing at: Claude rewrites for
 highlighted text, Filee-style conversions for files in Finder, and a ring of shortcuts
