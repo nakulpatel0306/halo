@@ -143,7 +143,10 @@ public enum FileActions {
     public static func convertTargets(for files: [URL]) -> [String] {
         guard !files.isEmpty, let kind = sharedKind(files) else { return [] }
         let current = Set(files.map(normalizedExtension))
-        return (targets[kind] ?? []).filter { !(current.count == 1 && current.contains($0.ext)) }.map(\.id)
+        return (targets[kind] ?? []).filter { target in
+            !(current.count == 1 && current.contains(target.ext))
+                && (kind != .image || target.ext == "pdf" || FileOps.canWrite(target.ext))
+        }.map(\.id)
     }
 
     public static func applies(_ id: String, to files: [URL]) -> Bool {

@@ -147,6 +147,25 @@ public enum FileOps {
         "bmp": .bmp, "ico": .ico, "icns": .icns,
     ]
 
+    /// Whether this Mac can write an image format. Some, like AVIF, depend on the
+    /// hardware and macOS version, so each is tried once on a tiny image.
+    public static func canWrite(_ ext: String) -> Bool {
+        writable.contains(ext)
+    }
+
+    private static let writable = Set(imageTypes.filter { probe($0.value) }.keys)
+
+    private static func probe(_ type: UTType) -> Bool {
+        let side = type == .icns ? 16 : 2
+        guard let ctx = CGContext(data: nil, width: side, height: side, bitsPerComponent: 8, bytesPerRow: 0,
+                                  space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue),
+              let image = ctx.makeImage(),
+              let dest = CGImageDestinationCreateWithData(NSMutableData(), type.identifier as CFString, 1, nil)
+        else { return false }
+        CGImageDestinationAddImage(dest, image, nil)
+        return CGImageDestinationFinalize(dest)
+    }
+
     /// `.jpg` rather than UTType's `.jpeg`, which is what people expect to see.
     static func fileExtension(for type: UTType) -> String {
         type == .jpeg ? "jpg" : type.preferredFilenameExtension ?? "png"

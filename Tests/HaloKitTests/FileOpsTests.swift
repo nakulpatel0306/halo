@@ -244,6 +244,7 @@ func pixelSize(_ url: URL) -> (Int, Int)? {
             #expect(FileManager.default.fileExists(atPath: out.path), "\(id)")
             #expect(FileOps.size(of: out) > 0, "\(id)")
         }
+        #expect(FileOps.canWrite("jpg") && FileOps.canWrite("png"))
         let icns = try await FileOps.convert(png, to: "icns")
         let source = try #require(CGImageSourceCreateWithURL(icns as CFURL, nil))
         #expect(CGImageSourceGetCount(source) == 5)
