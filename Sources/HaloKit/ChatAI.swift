@@ -30,9 +30,10 @@ public enum ChatAI {
         return ClaudeRequest(system: system, message: "\(task) Two or three sentences.\n\n\(block(chat))")
     }
 
-    /// A message containing "</chat>" can't close the block early and pose as the task.
+    /// Angle brackets are escaped so no message can close the block early and
+    /// pose as the task, however the tag is spelled or nested.
     private static func block(_ chat: [String]) -> String {
-        let lines = chat.map { $0.replacingOccurrences(of: "<chat>", with: "").replacingOccurrences(of: "</chat>", with: "") }
+        let lines = chat.map { $0.replacingOccurrences(of: "<", with: "&lt;").replacingOccurrences(of: ">", with: "&gt;") }
         return "<chat>\n\(lines.joined(separator: "\n"))\n</chat>"
     }
 }
