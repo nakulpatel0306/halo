@@ -32,7 +32,12 @@ enum ContextReader {
         NSWorkspace.shared.frontmostApplication?.bundleIdentifier
     }
 
-    static let terminals: Set = ["com.mitchellh.ghostty", "com.apple.Terminal", "com.googlecode.iterm2", "dev.warp.Warp-Stable"]
+    /// Apps where a pasted newline runs a command. Terminals inside editors, like
+    /// VS Code's, can't be told apart from the editor itself.
+    static let terminals: Set = [
+        "com.mitchellh.ghostty", "com.apple.Terminal", "com.googlecode.iterm2", "dev.warp.Warp-Stable", "dev.warp.Warp-Preview",
+        "net.kovidgoyal.kitty", "org.alacritty", "com.github.wez.wezterm", "co.zeit.hyper", "org.tabby", "com.raphaelamorim.rio",
+    ]
 
     static var frontIsTerminal: Bool {
         frontApp.map(terminals.contains) ?? false

@@ -337,6 +337,17 @@ final class ScratchDefaults {
         #expect(!args.contains(box.folder.path))
     }
 
+    @Test func linksAreNeverReadThrough() throws {
+        let box = try Sandbox()
+        let target = box.folder.appendingPathComponent("private.txt")
+        try "secret".write(to: target, atomically: true, encoding: .utf8)
+        let link = box.folder.appendingPathComponent("notes.txt")
+        try FileManager.default.createSymbolicLink(at: link, withDestinationURL: target)
+        let request = ClaudeRequest(system: "s", message: "m", files: [link])
+        #expect(throws: FileOpError.self) { try client.isolated(request) }
+        #expect(throws: FileOpError.self) { try client.content(for: request) }
+    }
+
     @Test func apiSendsTextFilesInline() throws {
         let box = try Sandbox()
         let note = box.folder.appendingPathComponent("note.md")

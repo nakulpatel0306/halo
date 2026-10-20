@@ -64,7 +64,17 @@ public struct ClaudeClient: Sendable {
 
     static let apiImageTypes: [UTType] = [.jpeg, .png, .gif, .webP]
 
+    /// A selected "file" that's really a link could point anywhere, like an SSH
+    /// key, so Claude only ever reads ordinary files.
+    static func requireRegularFile(_ url: URL) throws {
+        let values = try url.resourceValues(forKeys: [.isSymbolicLinkKey, .isRegularFileKey])
+        guard values.isSymbolicLink != true, values.isRegularFile == true else {
+            throw FileOpError.failed("\(url.lastPathComponent) is a link or folder. Select the original file.")
+        }
+    }
+
     static func block(for url: URL) throws -> [String: Any] {
+        try requireRegularFile(url)
         let type = UTType(filenameExtension: url.pathExtension) ?? .data
         let base64 = { (data: Data, mime: String) in ["type": "base64", "media_type": mime, "data": data.base64EncodedString()] }
         if type.conforms(to: .pdf) {
@@ -165,6 +175,7 @@ public struct ClaudeClient: Sendable {
     /// the same so Claude's answers still refer to the right files.
     func isolated(_ request: ClaudeRequest) throws -> (ClaudeRequest, URL?) {
         guard !request.files.isEmpty else { return (request, nil) }
+        try request.files.forEach(Self.requireRegularFile)
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("halo-read-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         var copies: [URL] = []
