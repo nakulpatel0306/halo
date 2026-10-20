@@ -1,0 +1,23 @@
+name: Release
+
+# Push a tag like v1.0.0 to test, build and publish Halo.zip as a release.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./scripts/test.sh
+      - run: ./scripts/build-app.sh
+        env:
+          HALO_VERSION: ${{ github.ref_name }}
+      - run: ditto -c -k --keepParent build/Halo.app Halo.zip
+      - run: gh release create "$GITHUB_REF_NAME" Halo.zip --title "Halo $GITHUB_REF_NAME" --notes-file .github/release-notes.md
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -3,7 +3,9 @@
 set -euo pipefail
 cd "${0:A:h}/.."
 
-VERSION=0.1.0
+# Release builds pass the tag, e.g. HALO_VERSION=v1.0.0.
+VERSION=${HALO_VERSION:-v1.0.0}
+VERSION=${VERSION#v}
 APP=build/Halo.app
 
 swift build -c release
