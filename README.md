@@ -20,8 +20,9 @@ API bill.
 
 - **A ring that follows what you point at.** Highlighted text gets the Text ring, Finder
   files get the Files ring, apps get their own ring, and everywhere else gets Everywhere
-- **Claude on your plan.** Professional, Fix Grammar, Shorter, Explain, Reply, Translate
-  and your own prompts, through Claude Code's login instead of a paid API key
+- **Claude on your plan.** Professional, Fix Grammar, Shorter, Explain, Reply, Translate,
+  tone rewrites (Friendlier, Flirty, Serious, Funnier) and your own prompts, through
+  Claude Code's login instead of a paid API key
 - **Study tools.** Study Notes (Markdown, ready for Obsidian) and Flashcards (imports
   straight into Anki) from highlighted text or lecture PDFs
 - **Developer tools.** Commit messages from a diff, code review, Copy for AI (files as
