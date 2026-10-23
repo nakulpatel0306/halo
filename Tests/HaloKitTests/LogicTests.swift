@@ -180,6 +180,12 @@ import Testing
         #expect(try replaced("text.cleanSpaces", "  a   b \n\n\n c ") == "a b\n\nc")
     }
 
+    @Test func lineToolsKeepTheTrailingNewline() throws {
+        #expect(try replaced("text.sortLines", "b\na\n") == "a\nb\n")
+        #expect(try replaced("text.sortLines", "b\r\na\r\n") == "a\r\nb\r\n")
+        #expect(try replaced("text.dedupe", "x\n\ny\nx\n") == "x\n\ny\n")
+    }
+
     @Test func encodingTools() throws {
         #expect(try replaced("text.json", #"{"b":1,"a":[1,2]}"#) == "{\n  \"a\" : [\n    1,\n    2\n  ],\n  \"b\" : 1\n}")
         #expect(try replaced("text.base64Decode", try replaced("text.base64", "héllo")!) == "héllo")

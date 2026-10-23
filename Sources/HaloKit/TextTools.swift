@@ -17,10 +17,10 @@ public enum TextTools {
         case "text.lower": return .replace(text.lowercased())
         case "text.titleCase": return .replace(titleCase(text))
         case "text.sentenceCase": return .replace(sentenceCase(text))
-        case "text.sortLines": return .replace(lines(text).sorted { $0.localizedStandardCompare($1) == .orderedAscending }.joined(separator: "\n"))
+        case "text.sortLines": return .replace(editLines(text) { $0.sorted { $0.localizedStandardCompare($1) == .orderedAscending } })
         case "text.dedupe":
             var seen = Set<String>()
-            return .replace(lines(text).filter { seen.insert($0).inserted }.joined(separator: "\n"))
+            return .replace(editLines(text) { $0.filter { seen.insert($0).inserted } })
         case "text.cleanSpaces": return .replace(cleanSpaces(text))
         case "text.json": return .replace(try prettyJSON(text))
         case "text.urlEncode":
@@ -51,6 +51,17 @@ public enum TextTools {
 
     static func lines(_ text: String) -> [String] {
         text.components(separatedBy: .newlines)
+    }
+
+    /// Whole lines selected in an editor end with a newline; peeling it off
+    /// first keeps sorting from moving it to the top, and keeping CRLF intact
+    /// stops each line ending from being read as a blank line of its own.
+    static func editLines(_ text: String, _ transform: ([String]) -> [String]) -> String {
+        let separator = text.contains("\r\n") ? "\r\n" : "\n"
+        var lines = text.components(separatedBy: separator)
+        let trailing = lines.count > 1 && lines.last == ""
+        if trailing { lines.removeLast() }
+        return transform(lines).joined(separator: separator) + (trailing ? separator : "")
     }
 
     /// Small words stay lowercase unless they start the title.
