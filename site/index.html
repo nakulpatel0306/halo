@@ -118,7 +118,9 @@
     .facts { margin: 28px 0 0; padding: 0; list-style: none; display: grid; gap: 14px; }
     .facts li { padding-left: 22px; position: relative; color: #d7d7da; }
     .facts li::before { content: ''; position: absolute; left: 0; top: .62em; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--blue)); }
-    @media (max-width: 920px) { .split { grid-template-columns: 1fr; gap: 32px; } .split .shot { order: 2; } }
+    .split.flip { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+    .split.flip .shot { order: 2; }
+    @media (max-width: 920px) { .split, .split.flip { grid-template-columns: 1fr; gap: 32px; } .split .shot { order: 2; } }
 
     /* Rings */
     .rings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
@@ -209,9 +211,8 @@
       </div>
       <div>
         <div class="shot">
-          <video data-src="media/rewrite.mp4" poster="media/rewrite.jpg" muted loop playsinline aria-label="Halo rewriting a draft email in TextEdit"></video>
+          <video data-src="media/hero.mp4" poster="media/hero.jpg" muted loop playsinline aria-label="Halo rewriting a draft email in Mail with Claude"></video>
         </div>
-        <p class="note">A real recording: Halo and Claude rewriting a draft in TextEdit. Trimmed, with the wait sped up.</p>
       </div>
     </div>
 
@@ -238,11 +239,44 @@
         </div>
         <div class="head">
           <h2>Files, without opening an app.</h2>
-          <p>Select something in Finder and Convert offers only the formats it can become. This is a real HEIC turning into a PNG next to the original.</p>
+          <p>Select something in Finder and Convert offers only the formats it can become. The new file lands next to the original, which is never touched.</p>
           <ul class="facts">
             <li style="--c: var(--teal)">Images, PDFs, audio and video, using the converters built into macOS</li>
             <li style="--c: var(--teal)">Compress, resize, merge PDFs, zip and unzip</li>
             <li style="--c: var(--clay)">Lecture slides into study notes or Anki flashcards with Claude</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap split flip">
+        <div class="shot">
+          <video data-src="media/ghostty.mp4" poster="media/ghostty.jpg" muted loop playsinline aria-label="Starting Claude Code from Halo's ring in Ghostty"></video>
+        </div>
+        <div class="head">
+          <h2>Built for your terminal and editor.</h2>
+          <p>In Ghostty, VS Code and Cursor the ring becomes that app's own shortcuts. Start Claude Code, split a pane, open the terminal or comment a line without remembering a single key combo.</p>
+          <ul class="facts">
+            <li style="--c: var(--cyan)">Ghostty: Claude Code, splits, zoom, jump between prompts</li>
+            <li style="--c: var(--cyan)">VS Code and Cursor: Commands, Go to File, Terminal, Comment, Format</li>
+            <li style="--c: var(--clay)">Highlight a diff and get a commit message</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap split">
+        <div class="shot">
+          <video data-src="media/messages.mp4" poster="media/messages.jpg" muted loop playsinline aria-label="Halo explaining a text in Messages"></video>
+        </div>
+        <div class="head">
+          <h2>Help with texting.</h2>
+          <p>In Messages, ask what their last text actually meant, sum up the chat, or rewrite the reply you're typing before you send it. No highlighting needed.</p>
+          <ul class="facts">
+            <li style="--c: var(--clay)">Explain their last text, or sum up the conversation</li>
+            <li style="--c: var(--clay)">Rewrite your reply Funnier, Friendlier, Serious or Flirty</li>
           </ul>
         </div>
       </div>
