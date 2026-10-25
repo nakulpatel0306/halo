@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Halo: a radial action ring for your Mac</title>
+<title>Halo - A Radial Action Ring For Your Mac</title>
 <meta name="description" content="Hold Option-Space anywhere, flick toward an action and let go. Claude rewrites, file conversions and app shortcuts in a ring at your cursor. Free and open source for macOS.">
-<meta property="og:title" content="Halo: a radial action ring for your Mac">
+<meta property="og:title" content="Halo - A Radial Action Ring For Your Mac">
 <meta property="og:description" content="Hold ⌥ Space anywhere, flick toward an action and let go. Free and open source for macOS 14 and later.">
-<meta property="og:image" content="media/rewrite-demo-light.jpg">
+<meta property="og:image" content="media/hero.jpg">
 <meta name="theme-color" content="#fbfbfd">
 <link rel="icon" href="media/icon.png">
 <style>
@@ -84,7 +84,14 @@
   .hero .keys { margin: 22px 0 0; font-size: 19px; }
   .cta { display: flex; justify-content: center; align-items: center; gap: 22px; flex-wrap: wrap; margin-top: 30px; }
   .meta { color: var(--dim); font-size: 14px; margin-top: 14px; }
-  .film { margin: 48px auto 0; max-width: 1060px; padding: 0 24px; }
+  .film { position: relative; margin: 48px auto 0; max-width: 1060px; padding: 0 24px; }
+  /* A soft bloom in the wallpaper's colours, so the hero glows out of the page */
+  .hero + .film::before {
+    content: ''; position: absolute; inset: 4% 2% -8%; z-index: -1;
+    background: radial-gradient(60% 65% at 28% 62%, rgba(47, 181, 255, .7), transparent 72%),
+                radial-gradient(55% 60% at 76% 38%, rgba(255, 111, 181, .55), transparent 72%);
+    filter: blur(60px);
+  }
   video, .shot { width: 100%; display: block; border-radius: 18px; background: #000; }
   .film video { box-shadow: 0 30px 80px rgba(0,0,0,.14); }
 
@@ -189,7 +196,7 @@
       <p class="meta" id="version">Free and open source. macOS 14 or later, Apple silicon and Intel.</p>
     </div>
     <div class="film">
-      <video data-src="media/rewrite-demo-light.mp4" poster="media/rewrite-demo-light.jpg" muted loop playsinline aria-label="A rough draft is highlighted, the ring opens, Professional is chosen, and the draft is rewritten in place"></video>
+      <video data-src="media/hero.mp4" poster="media/hero.jpg" muted loop playsinline aria-label="On a Mac desktop, a rough email draft is highlighted, the ring opens, Professional is chosen, and the draft is rewritten in place"></video>
     </div>
 
     <section class="night" style="margin-top:96px">
