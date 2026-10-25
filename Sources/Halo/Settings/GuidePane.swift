@@ -11,10 +11,17 @@ struct GuidePane: View {
 
     var body: some View {
         PaneScroll(pane: .guide) {
-            Card(title: "Setup", footer: "After every rebuild of Halo, macOS forgets Accessibility. Turn Halo off and on again there.") {
-                Step(done: claudeLoggedIn, title: "Sign in to Claude Code",
-                     detail: "Claude actions run on your Claude plan. Run `claude` in a terminal once and log in.") {
-                    Button("Check Again") { checkClaude() }
+            Card(title: "Setup", footer: "After updating Halo, macOS forgets Accessibility. Turn Halo off and on again there.") {
+                if model.settings.ai.provider == .anthropicAPI {
+                    Step(done: Keychain.apiKey() != nil, title: "Add your API key",
+                         detail: "Claude actions use your Anthropic API key. Paste it in the Claude pane.") {
+                        Button("Open") { selection.pane = .ai }
+                    }
+                } else {
+                    Step(done: claudeLoggedIn, title: "Sign in to Claude Code",
+                         detail: "Claude actions run on your Claude plan. Install Claude Code, run `claude` in a terminal once and log in. Everything else in Halo works without it.") {
+                        Button("Check Again") { checkClaude() }
+                    }
                 }
                 Divided()
                 Step(done: accessibility, title: "Allow Accessibility",
@@ -117,9 +124,9 @@ struct GuidePane: View {
 
             Card(title: "If something's off") {
                 Tip(symbol: "exclamationmark.triangle.fill", tint: .orange, title: "“Allow Halo in Accessibility settings first”",
-                    detail: "Turn Halo off and on in Accessibility. Always needed after a rebuild.")
+                    detail: "Turn Halo off and on in Accessibility. Always needed after updating Halo.")
                 Divided()
-                Tip(symbol: "folder.badge.questionmark", tint: .orange, title: "Files ring says “No actions”",
+                Tip(symbol: "folder.badge.questionmark", tint: .orange, title: "Finder files get the Everywhere ring",
                     detail: "Allow Halo to control Finder in Privacy & Security → Automation.")
                 Divided()
                 Tip(symbol: "sparkles", tint: .orange, title: "Claude actions fail",

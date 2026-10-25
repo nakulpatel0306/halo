@@ -30,7 +30,7 @@ public enum FileAI {
             return ClaudeRequest(system: system, message: "Summarize \(what): what it is and the points that matter.", files: files)
         case "file.aiNotes":
             let system = """
-            You turn lecture slides, readings and documents into study notes for a university student. \
+            You turn lecture slides, readings and documents into study notes for a student. \
             Reply with Markdown only, no preamble: a # title, ## sections that follow the material, short bullets, \
             key terms in **bold** with one-line definitions, and a final ## Review section of 3–5 questions worth being able to answer.
             """
@@ -55,7 +55,7 @@ public enum FileAI {
 
     /// Shared with the text Flashcards action so both import into Anki the same way.
     public static let flashcardSystem = """
-    You write flashcards for a university student studying for exams. Cover the ideas most likely to be tested, \
+    You write flashcards for a student studying for exams. Cover the ideas most likely to be tested, \
     one fact per card, in your own concise words. Reply with one card per line and nothing else: \
     the question, a single tab character, then the answer. No numbering, no header, no tabs inside a question or answer.
     """

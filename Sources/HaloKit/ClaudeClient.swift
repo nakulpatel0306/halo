@@ -146,8 +146,13 @@ public struct ClaudeClient: Sendable {
         "/usr/local/bin/claude",
     ].map { NSString(string: $0).expandingTildeInPath }
 
+    /// The installer's usual spots first, then anywhere on the user's shell PATH (npm under nvm,
+    /// asdf, a custom prefix).
+    /// Long enough for a summary of a long lecture PDF, short enough that a hung CLI gets reported.
+    static let cliTimeout: TimeInterval = 180
+
     public static func findCLI() -> String? {
-        cliCandidates.first { FileManager.default.isExecutableFile(atPath: $0) }
+        cliCandidates.first { FileManager.default.isExecutableFile(atPath: $0) } ?? Shell.which("claude")
     }
 
     /// Text requests get no tools at all. File requests get only Read, scoped to
@@ -203,8 +208,14 @@ public struct ClaudeClient: Sendable {
         defer { if let sandbox { try? FileManager.default.removeItem(at: sandbox) } }
         // With an API key in the environment the CLI bills that key instead of
         // the subscription, which is the whole point of this provider.
-        let result = try await Shell.run(cli, cliArguments(for: request), stdin: cliMessage(for: request),
-                                         cwd: FileManager.default.temporaryDirectory, unsetting: ["ANTHROPIC_API_KEY"])
+        let result: Shell.Result
+        do {
+            result = try await Shell.run(cli, cliArguments(for: request), stdin: cliMessage(for: request),
+                                         cwd: FileManager.default.temporaryDirectory, unsetting: ["ANTHROPIC_API_KEY"],
+                                         timeout: Self.cliTimeout)
+        } catch Shell.Failure.timedOut {
+            throw RewriteError.timedOut
+        }
         guard result.status == 0 else {
             throw RewriteError.process(result.stderr.isEmpty ? result.stdout : result.stderr)
         }

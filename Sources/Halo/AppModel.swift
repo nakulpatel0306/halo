@@ -18,6 +18,10 @@ final class AppModel: ObservableObject {
     private let store = SettingsStore()
     private var hotKey: HotKey?
     private(set) var shortcutFailed = false
+    /// A newer release, once the daily check has found one.
+    @Published var update: Updates.Release?
+    /// "dev" for builds run straight from SwiftPM, which have no Info.plist.
+    static let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "dev"
     lazy var ring = RingController(model: self)
     lazy var runner = ActionRunner(model: self)
     lazy var settingsWindow = SettingsWindowController(model: self)
@@ -103,8 +107,49 @@ final class AppModel: ObservableObject {
         get { SMAppService.mainApp.status == .enabled }
         set {
             objectWillChange.send()
-            if newValue { try? SMAppService.mainApp.register() } else { try? SMAppService.mainApp.unregister() }
+            do {
+                if newValue { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
+            } catch {
+                // macOS explains a refusal, or asks for approval, in Login Items rather than to the app
+                SMAppService.openSystemSettingsLoginItems()
+            }
+            if newValue, SMAppService.mainApp.status == .requiresApproval { SMAppService.openSystemSettingsLoginItems() }
         }
+    }
+
+    /// Checks GitHub at most once a day, quietly; a newer release shows up in the menu.
+    func checkForUpdatesIfDue() async {
+        let key = "lastUpdateCheck"
+        guard Self.version != "dev", Date().timeIntervalSince(UserDefaults.standard.object(forKey: key) as? Date ?? .distantPast) > 86_400
+        else { return }
+        do {
+            update = try await Updates.check(current: Self.version)
+            UserDefaults.standard.set(Date(), forKey: key)
+        } catch {
+            // Offline or rate-limited: try again next launch
+        }
+    }
+
+    /// The menu's Check for Updates: always answers, even when there's nothing new.
+    func checkForUpdatesNow() async {
+        let alert = NSAlert()
+        do {
+            if let found = try await Updates.check(current: Self.version) {
+                update = found
+                alert.messageText = "Halo \(found.version) is available"
+                alert.informativeText = "You have \(Self.version). Download the new Halo.zip, quit Halo and replace Halo.app in Applications. Then turn Halo off and on again in Accessibility."
+                alert.addButton(withTitle: "Download")
+                alert.addButton(withTitle: "Later")
+            } else {
+                alert.messageText = "Halo is up to date"
+                alert.informativeText = "You have the latest version, \(Self.version)."
+            }
+        } catch {
+            alert.messageText = "Couldn't check for updates"
+            alert.informativeText = "GitHub didn't answer. Check your connection and try again."
+        }
+        NSApp.activate(ignoringOtherApps: true)
+        if alert.runModal() == .alertFirstButtonReturn, let page = update?.page { NSWorkspace.shared.open(page) }
     }
 
     func openSettings(_ pane: SettingsPane? = nil, editing target: RingTarget? = nil) {

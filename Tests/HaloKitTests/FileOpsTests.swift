@@ -382,6 +382,18 @@ func pixelSize(_ url: URL) -> (Int, Int)? {
         #expect(try FileManager.default.contentsOfDirectory(atPath: folder.path) == ["-T.png"])
     }
 
+    @Test func filesFromDifferentFoldersZipTogether() async throws {
+        let box = try Sandbox()
+        let a = try box.image("a.png")
+        let other = box.folder.appendingPathComponent("other")
+        try FileManager.default.createDirectory(at: other, withIntermediateDirectories: true)
+        let b = other.appendingPathComponent("b.png")
+        try FileManager.default.copyItem(at: a, to: b)
+        let zip = try await FileOps.zip([b, a])
+        let folder = try await FileOps.unzip(zip)
+        #expect(try FileManager.default.contentsOfDirectory(atPath: folder.path).sorted() == ["a.png", "b.png"])
+    }
+
     @Test func singleFileZipIsNamedAfterIt() async throws {
         let box = try Sandbox()
         let zip = try await FileOps.zip([try box.image("report.png")])

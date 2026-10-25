@@ -20,6 +20,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     let model = AppModel()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // Reading the login shell's PATH takes about half a second; do it now rather than on
+        // the first action that runs a tool.
+        DispatchQueue.global(qos: .utility).async { _ = Shell.searchPath }
+        // A tool that exits before reading its input would otherwise kill Halo with SIGPIPE.
+        signal(SIGPIPE, SIG_IGN)
+        if Bundle.main.bundlePath.contains("/AppTranslocation/") {
+            warnAboutTranslocation()
+            return
+        }
+        Task { await model.checkForUpdatesIfDue() }
         let args = CommandLine.arguments
         if let index = args.firstIndex(of: "--demo-ring"), index + 1 < args.count {
             let name = args[index + 1]
@@ -34,6 +44,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if let index = args.firstIndex(of: "--snapshot"), index + 1 < args.count {
             snapshot(to: URL(fileURLWithPath: args[index + 1]))
         }
+    }
+
+    /// Opening Halo again while it's running brings up the Guide, the only way back in for
+    /// someone whose menu bar icon is hidden behind the notch.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if !flag { model.openSettings(.guide) }
+        return true
+    }
+
+    /// Run from Downloads, macOS launches a read-only copy from a hidden folder, and
+    /// Accessibility and Open at Login attach to that copy and stop working.
+    private func warnAboutTranslocation() {
+        let alert = NSAlert()
+        alert.messageText = "Move Halo to Applications"
+        alert.informativeText = "macOS is running a temporary copy of Halo because it's still in Downloads, so its permissions won't stick. Quit Halo, drag Halo.app into Applications, and open it from there."
+        alert.addButton(withTitle: "Quit Halo")
+        NSApp.activate(ignoringOtherApps: true)
+        alert.runModal()
+        NSApp.terminate(nil)
     }
 
     /// Saves Halo's front window as a PNG and quits, for checking layouts. Draws
@@ -64,8 +93,17 @@ struct MenuContent: View {
     @ObservedObject var model: AppModel
 
     var body: some View {
+        if let update = model.update {
+            Button("Update to Halo \(update.version)…") { NSWorkspace.shared.open(update.page) }
+            Divider()
+        }
         Button("Show Ring") { model.ring.showFromMenu() }
-        Text("Hold \(model.settings.shortcut.display) anywhere")
+        if model.shortcutFailed {
+            Text("\(model.settings.shortcut.display) is taken by another app")
+            Button("Choose Another Shortcut…") { model.openSettings(.general) }
+        } else {
+            Text("Hold \(model.settings.shortcut.display) anywhere")
+        }
         if model.keepingAwake {
             Button("Stop Keeping Awake") { model.keepingAwake = SystemActions.toggleKeepAwake() }
         }
@@ -78,6 +116,8 @@ struct MenuContent: View {
         Button("Settings…") { model.openSettings() }
             .keyboardShortcut(",")
         Divider()
+        Text("Halo \(AppModel.version)")
+        Button("Check for Updates…") { Task { await model.checkForUpdatesNow() } }
         Button("Quit Halo") { NSApp.terminate(nil) }
             .keyboardShortcut("q")
     }

@@ -186,7 +186,8 @@ public struct AISettings: Codable, Hashable, Sendable {
     public var model: ClaudeModel = .sonnet
     /// Free-form notes about how the user writes, added to every rewrite.
     public var voice: String = ""
-    public var translateTo: String = "English"
+    /// The Mac's own language, named in English since that's how the prompt asks for it.
+    public var translateTo: String = Locale(identifier: "en").localizedString(forLanguageCode: Locale.current.language.languageCode?.identifier ?? "en") ?? "English"
 
     public init() {}
 }
@@ -296,16 +297,62 @@ public struct SettingsStore {
     }
 
     /// Saved values are laid over fresh defaults, so settings saved by an older
-    /// version pick up new options instead of failing to load.
+    /// version pick up new options instead of failing to load. Anything that no
+    /// longer decodes (say a model Halo has since dropped) is reset on its own,
+    /// and the original is backed up first, so one bad value can't cost the user
+    /// their custom actions and rings.
     public func load() -> HaloSettings {
         guard let data = defaults.data(forKey: key),
               let saved = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let fresh = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(HaloSettings())) as? [String: Any],
-              let merged = try? JSONSerialization.data(withJSONObject: Self.merge(saved, over: fresh)),
-              var settings = try? JSONDecoder().decode(HaloSettings.self, from: merged)
+              let fresh = try? JSONSerialization.jsonObject(with: JSONEncoder().encode(HaloSettings())) as? [String: Any]
         else { return HaloSettings() }
+        var settings: HaloSettings
+        if let decoded = Self.decode(Self.merge(saved, over: fresh)) {
+            settings = decoded
+        } else {
+            defaults.set(data, forKey: backupKey)
+            let salvaged = Self.salvage(saved, over: fresh) { Self.decode($0) != nil }
+            settings = Self.decode(salvaged) ?? HaloSettings()
+        }
         settings.reconcile()
         return settings
+    }
+
+    /// Where the raw settings go before a salvage throws anything away.
+    public var backupKey: String { key + ".backup" }
+
+    static func decode(_ object: [String: Any]) -> HaloSettings? {
+        guard let data = try? JSONSerialization.data(withJSONObject: object) else { return nil }
+        return try? JSONDecoder().decode(HaloSettings.self, from: data)
+    }
+
+    /// Lays saved values over `base` one at a time, keeping each only if the result
+    /// still decodes. Nested settings are salvaged key by key and lists item by item.
+    static func salvage(_ saved: [String: Any], over base: [String: Any], decodes: ([String: Any]) -> Bool) -> [String: Any] {
+        var out = base
+        for (key, value) in saved {
+            var trial = out
+            if let nested = value as? [String: Any], let baseNested = base[key] as? [String: Any] {
+                let current = out
+                trial[key] = salvage(nested, over: baseNested) { sub in
+                    var candidate = current
+                    candidate[key] = sub
+                    return decodes(candidate)
+                }
+            } else if let items = value as? [Any] {
+                var kept: [Any] = []
+                for item in items {
+                    var candidate = out
+                    candidate[key] = kept + [item]
+                    if decodes(candidate) { kept.append(item) }
+                }
+                trial[key] = kept
+            } else {
+                trial[key] = value
+            }
+            if decodes(trial) { out = trial }
+        }
+        return out
     }
 
     static func merge(_ saved: [String: Any], over base: [String: Any]) -> [String: Any] {

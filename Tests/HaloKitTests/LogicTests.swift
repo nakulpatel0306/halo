@@ -1,3 +1,4 @@
+import Carbon.HIToolbox
 import Foundation
 import Testing
 @testable import HaloKit
@@ -435,5 +436,148 @@ final class ScratchDefaults {
         #expect(FileActions.applies("file.aiSummarize", to: [pdf, md]))
         #expect(!FileActions.applies("file.aiRename", to: [pdf, mov]))
         #expect(!FileActions.applies("file.aiRename", to: [heic]))
+    }
+}
+
+@Suite struct ShellPathTests {
+    @Test func pathIsReadFromBetweenTheMarkers() {
+        let noisy = "Welcome back!\n__HALO_PATH__/a/bin:/b/bin__HALO_PATH__\nlast login"
+        #expect(Shell.pathFromMarkers(noisy) == ["/a/bin", "/b/bin"])
+        #expect(Shell.pathFromMarkers("no markers here") == nil)
+        #expect(Shell.pathFromMarkers("__HALO_PATH____HALO_PATH__") == nil)
+    }
+
+    @Test func mergedKeepsOrderAndDropsRepeats() {
+        #expect(Shell.merged(["/x", "/y"], ["/y", "/z", ""]) == ["/x", "/y", "/z"])
+    }
+
+    @Test func whichFindsExecutablesOnTheGivenPath() {
+        #expect(Shell.which("ls", in: ["/nonexistent", "/bin"]) == "/bin/ls")
+        #expect(Shell.which("definitely-not-a-tool", in: ["/bin"]) == nil)
+    }
+}
+
+@Suite struct SettingsSalvageTests {
+    func store() -> SettingsStore {
+        let suite = "halo-tests-\(UUID().uuidString)"
+        return SettingsStore(defaults: UserDefaults(suiteName: suite)!)
+    }
+
+    /// Saves settings as JSON after `damage` edits the encoded form.
+    func save(_ settings: HaloSettings, to store: SettingsStore, damage: (inout [String: Any]) -> Void) throws {
+        var object = try JSONSerialization.jsonObject(with: JSONEncoder().encode(settings)) as! [String: Any]
+        damage(&object)
+        store.defaults.set(try JSONSerialization.data(withJSONObject: object), forKey: store.key)
+    }
+
+    @Test func anUnknownModelResetsOnlyTheModel() throws {
+        let store = store()
+        var settings = HaloSettings()
+        settings.appearance.accent = .pink
+        settings.customActions = [CustomAction(title: "Mine", kind: .url("example.com"))]
+        try save(settings, to: store) { object in
+            var ai = object["ai"] as! [String: Any]
+            ai["model"] = "claude-from-the-future"
+            object["ai"] = ai
+        }
+        let loaded = store.load()
+        #expect(loaded.ai.model == HaloSettings().ai.model)
+        #expect(loaded.appearance.accent == .pink)
+        #expect(loaded.customActions.map(\.title) == ["Mine"])
+        #expect(store.defaults.data(forKey: store.backupKey) != nil)
+    }
+
+    @Test func oneBrokenCustomActionDoesntCostTheOthers() throws {
+        let store = store()
+        var settings = HaloSettings()
+        settings.customActions = [CustomAction(title: "First", kind: .url("a.com")), CustomAction(title: "Second", kind: .url("b.com"))]
+        try save(settings, to: store) { object in
+            var actions = object["customActions"] as! [Any]
+            actions.insert(["title": "Broken"], at: 1)
+            object["customActions"] = actions
+        }
+        #expect(store.load().customActions.map(\.title) == ["First", "Second"])
+    }
+
+    @Test func goodSettingsLoadAsSavedWithoutABackup() throws {
+        let store = store()
+        var settings = HaloSettings()
+        settings.appearance.accent = .green
+        store.save(settings)
+        #expect(store.load().appearance.accent == .green)
+        #expect(store.defaults.data(forKey: store.backupKey) == nil)
+    }
+}
+
+@Suite struct KeyLayoutTests {
+    // On Dvorak, C and V are typed by the keys a US keyboard calls I and Period
+    let dvorak: [Character: (keyCode: Int, shift: Bool)] = ["c": (kVK_ANSI_I, false), "v": (kVK_ANSI_Period, false)]
+
+    @Test func copyAndPasteFollowTheLayout() {
+        let copy = KeyLayout.translate(KeyCombo(kVK_ANSI_C, .command)) { dvorak[$0] }
+        #expect(copy == KeyCombo(kVK_ANSI_I, .command))
+        #expect(KeyLayout.translate(KeyCombo(kVK_ANSI_V, .command)) { dvorak[$0] } == KeyCombo(kVK_ANSI_Period, .command))
+    }
+
+    @Test func aCharacterThatNeedsShiftGetsShift() {
+        // On AZERTY "/" is Shift plus the key a US keyboard calls Period
+        let combo = KeyLayout.translate(KeyCombo(kVK_ANSI_Slash, .command)) { $0 == "/" ? (kVK_ANSI_Period, true) : nil }
+        #expect(combo == KeyCombo(kVK_ANSI_Period, [.command, .shift]))
+    }
+
+    @Test func nonCharacterKeysAndUnknownCharactersPassThrough() {
+        #expect(KeyLayout.translate(KeyCombo(kVK_Return)) { _ in (0, false) } == KeyCombo(kVK_Return))
+        #expect(KeyLayout.translate(KeyCombo(kVK_ANSI_C, .command)) { _ in nil } == KeyCombo(kVK_ANSI_C, .command))
+    }
+
+    @Test func theActiveLayoutTypesTheLettersSomewhere() {
+        // Whatever layout the test machine uses, every letter is on some key
+        for character in "cvpkt" { #expect(KeyLayout.currentLayoutKey(for: character) != nil) }
+    }
+}
+
+@Suite struct KeyLayoutOnUSTests {
+    @Test(.enabled(if: KeyLayoutOnUSTests.isUS)) func aUSLayoutLeavesEveryBuiltInShortcutAlone() {
+        for (code, _) in KeyLayout.usCharacters {
+            #expect(KeyLayout.translate(KeyCombo(code, .command)) == KeyCombo(code, .command))
+        }
+    }
+
+    static var isUS: Bool {
+        guard let source = TISCopyCurrentKeyboardLayoutInputSource()?.takeRetainedValue(),
+              let id = TISGetInputSourceProperty(source, kTISPropertyInputSourceID) else { return false }
+        let name = Unmanaged<CFString>.fromOpaque(id).takeUnretainedValue() as String
+        return name.hasSuffix(".US") || name.hasSuffix(".ABC") || name.hasSuffix(".Canadian")
+    }
+}
+
+@Suite struct ShellTimeoutTests {
+    @Test func aHungProcessIsStoppedAndReported() async throws {
+        let start = Date()
+        await #expect(throws: Shell.Failure.self) {
+            _ = try await Shell.run("/bin/sleep", ["30"], timeout: 0.5)
+        }
+        #expect(Date().timeIntervalSince(start) < 5)
+    }
+
+    @Test func aProcessThatFinishesInTimeReturnsNormally() async throws {
+        let result = try await Shell.run("/bin/echo", ["hi"], timeout: 5)
+        #expect(result.stdout == "hi\n")
+    }
+}
+
+@Suite struct UpdateTests {
+    @Test func versionsCompareNumerically() {
+        #expect(Updates.isNewer("1.0.10", than: "1.0.9"))
+        #expect(Updates.isNewer("v1.1", than: "1.0.9"))
+        #expect(!Updates.isNewer("1.0.3", than: "1.0.3"))
+        #expect(!Updates.isNewer("1.0", than: "1.0.0"))
+        #expect(!Updates.isNewer("1.0.2", than: "1.0.3"))
+    }
+
+    @Test func aReleaseIsReadFromGitHubsResponse() {
+        let json: [String: Any] = ["tag_name": "v1.2.0", "html_url": "https://github.com/nakulpatel0306/halo/releases/tag/v1.2.0"]
+        #expect(Updates.release(from: json) == Updates.Release(version: "1.2.0", page: URL(string: "https://github.com/nakulpatel0306/halo/releases/tag/v1.2.0")!))
+        #expect(Updates.release(from: ["message": "Not Found"]) == nil)
     }
 }

@@ -44,7 +44,7 @@ public struct RewriteRequest: Sendable, Equatable {
         case "text.explain":
             instruction = "Explain what this means in plain language, briefly. Define any jargon, code or acronyms it relies on."
         case "text.notes":
-            instruction = "Turn this into study notes for a university student: short Markdown bullets grouped under headings, key terms in **bold** with one-line definitions."
+            instruction = "Turn this into study notes for a student: short Markdown bullets grouped under headings, key terms in **bold** with one-line definitions."
         case "text.flashcards":
             instruction = FileAI.flashcardSystem + "\n\nMake flashcards from this text."
         case "text.promptPolish":
@@ -96,6 +96,7 @@ public struct RewriteRequest: Sendable, Equatable {
 public enum RewriteError: LocalizedError, Equatable {
     case missingAPIKey
     case claudeCodeNotFound
+    case timedOut
     case refused
     case empty
     case http(Int, String)
@@ -103,8 +104,9 @@ public enum RewriteError: LocalizedError, Equatable {
 
     public var errorDescription: String? {
         switch self {
-        case .missingAPIKey: "Add your Anthropic API key in Halo Settings → AI, or switch to your Claude subscription."
+        case .missingAPIKey: "Add your Anthropic API key in Halo Settings → Claude, or switch to your Claude subscription."
         case .claudeCodeNotFound: "Couldn't find the claude command. Install Claude Code and sign in with your Claude account."
+        case .timedOut: "Claude didn't answer within 3 minutes. Run claude in Terminal to check it's signed in, then try again."
         case .refused: "Claude declined this request."
         case .empty: "Claude returned an empty response."
         case let .http(status, message): "Claude API error \(status): \(message)"

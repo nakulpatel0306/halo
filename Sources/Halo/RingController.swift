@@ -82,7 +82,7 @@ final class RingController {
             let canCopy = profile == nil || ContextReader.frontIsBrowser
             let context = await ContextReader.current(copying: settings.behavior.copyToReadSelection && canCopy)
             loading = false
-            show(context, target: model.target(for: context, profile: profile), caption: profile?.name, at: mouse)
+            show(context, target: model.target(for: context, profile: profile), caption: Self.blocked(app: app) ?? profile?.name, at: mouse)
         }
     }
 
@@ -161,6 +161,13 @@ final class RingController {
         guard let screen = NSScreen.screens.first(where: { $0.frame.contains(point) }) ?? NSScreen.main else { return point }
         let f = screen.visibleFrame.insetBy(dx: size / 2, dy: size / 2)
         return NSPoint(x: min(max(point.x, f.minX), f.maxX), y: min(max(point.y, f.minY), f.maxY))
+    }
+
+    /// What's stopping the ring from seeing the selection, said where the user is looking.
+    private static func blocked(app: String?) -> String? {
+        if app == "com.apple.finder", ContextReader.finderBlocked { return "Allow Halo to control Finder" }
+        if !Permissions.accessibility { return "Allow Accessibility in Halo's menu" }
+        return nil
     }
 
     private static func caption(for context: RingContext) -> String {

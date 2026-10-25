@@ -618,16 +618,19 @@ public enum FileOps {
     // MARK: Archives
 
     public static func zip(_ urls: [URL], options: FileOptions = FileOptions()) async throws -> URL {
-        let source = urls[0].deletingLastPathComponent()
         let folder = try self.folder(for: urls[0], options: options)
         let out = urls.count == 1
             ? uniqueURL(in: folder, base: urls[0].deletingPathExtension().lastPathComponent, ext: "zip")
             : uniqueURL(in: folder, base: "Archive", ext: "zip")
-        // Relative names from the shared folder keep the archive free of absolute
-        // paths; the ./ stops a name like "-T" being read as a zip option.
-        let names = urls.map { "./" + $0.lastPathComponent }
-        let result = try await Shell.run("/usr/bin/zip", ["-r", "-q", "-y", "-X", out.path] + names, cwd: source)
-        guard result.status == 0 else { throw FileOpError.failed("zip failed: \(result.stderr)") }
+        // Files picked from search results or Recents can sit in different folders, so each
+        // folder's files are added from that folder. Relative names keep the archive free of
+        // absolute paths; the ./ stops a name like "-T" being read as a zip option.
+        let byFolder = Dictionary(grouping: urls) { $0.deletingLastPathComponent() }
+        for source in byFolder.keys.sorted(by: { $0.path < $1.path }) {
+            let names = byFolder[source]!.map { "./" + $0.lastPathComponent }
+            let result = try await Shell.run("/usr/bin/zip", ["-r", "-q", "-y", "-X", out.path] + names, cwd: source)
+            guard result.status == 0 else { throw FileOpError.failed("zip failed: \(result.stderr)") }
+        }
         return out
     }
 

@@ -30,7 +30,10 @@ struct AIPane: View {
                         SecureField("", text: $apiKey, prompt: Text("sk-ant-…"))
                             .textFieldStyle(.roundedBorder)
                             .frame(width: 240)
-                            .onChange(of: apiKey) { Keychain.setAPIKey(apiKey) }
+                            // Saved when done typing, not per keystroke, so the Keychain isn't rewritten
+                            // (and possibly asking for a password) on every character
+                            .onSubmit { Keychain.setAPIKey(apiKey) }
+                            .onDisappear { Keychain.setAPIKey(apiKey) }
                     }
                 }
                 Divided()

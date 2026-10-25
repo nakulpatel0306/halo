@@ -3,9 +3,12 @@
 set -euo pipefail
 cd "${0:A:h}/.."
 
-# Release builds pass the tag, e.g. HALO_VERSION=v1.0.0.
-VERSION=${HALO_VERSION:-v1.0.0}
+# Release builds pass the tag, e.g. HALO_VERSION=v1.0.0. Local builds take the latest tag, so
+# they don't think they're behind and show an update that's already installed.
+VERSION=${HALO_VERSION:-$(git describe --tags --abbrev=0 2>/dev/null || echo v1.0.0)}
 VERSION=${VERSION#v}
+# A build number that only goes up, so macOS can tell builds of one version apart
+BUILD=$(git rev-list --count HEAD 2>/dev/null || echo 1)
 APP=build/Halo.app
 
 rm -rf $APP
@@ -43,7 +46,7 @@ cat > $APP/Contents/Info.plist <<PLIST
   <key>CFBundleIconFile</key><string>AppIcon</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>$VERSION</string>
-  <key>CFBundleVersion</key><string>1</string>
+  <key>CFBundleVersion</key><string>$BUILD</string>
   <key>LSMinimumSystemVersion</key><string>14.0</string>
   <key>LSUIElement</key><true/>
   <key>NSHighResolutionCapable</key><true/>

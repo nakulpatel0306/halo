@@ -32,7 +32,8 @@ final class ActionRunner {
         }
         if let keys = info?.keys {
             guard requireAccessibility(at: point) else { return }
-            return ContextReader.press(keys)
+            // Built-in shortcuts are written for a US keyboard; recorded ones (runCustom) aren't.
+            return ContextReader.press(KeyLayout.translate(keys))
         }
         if let command = info?.command {
             guard requireAccessibility(at: point) else { return }

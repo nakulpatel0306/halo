@@ -36,7 +36,13 @@ final class HUD {
         guard let panel, let view = panel.contentView else { return }
         let size = view.fittingSize
         panel.setContentSize(size)
-        panel.setFrameOrigin(NSPoint(x: point.x - size.width / 2, y: point.y - size.height / 2))
+        // Centred on the ring, but kept on the screen when the ring was near an edge
+        var origin = NSPoint(x: point.x - size.width / 2, y: point.y - size.height / 2)
+        if let visible = (NSScreen.screens.first { $0.frame.contains(point) } ?? NSScreen.main)?.visibleFrame {
+            origin.x = min(max(origin.x, visible.minX), visible.maxX - size.width)
+            origin.y = min(max(origin.y, visible.minY), visible.maxY - size.height)
+        }
+        panel.setFrameOrigin(origin)
         panel.orderFrontRegardless()
 
         guard case .working = status else {

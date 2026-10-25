@@ -98,6 +98,8 @@ public enum ActionCatalog {
     /// Whether an action makes sense for what's selected. The Files ring only
     /// shows actions that do, the same way Filee only offers formats that fit.
     public static func applies(_ id: String, to context: RingContext) -> Bool {
+        // Opens the Claude desktop app, which not everyone has
+        if id == "general.claude" { return Apps.installed(Apps.claude) }
         guard case let .files(files) = context, id.hasPrefix("file.") || id.hasPrefix("convert.") else { return true }
         return FileActions.applies(id, to: files)
     }

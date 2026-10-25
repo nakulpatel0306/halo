@@ -59,7 +59,7 @@ struct GeneralPane: View {
                 Divided()
                 HowRow(symbol: "folder", title: "Select files in Finder", detail: "Convert, compress, resize and more. Only what fits appears.")
                 Divided()
-                HowRow(symbol: "square.grid.2x2", title: "In your apps", detail: "VS Code, GitHub, Xcode and others get rings of their own shortcuts.")
+                HowRow(symbol: "square.grid.2x2", title: "In your apps", detail: "VS Code, Cursor, Ghostty, browsers and others get rings of their own shortcuts.")
             }
         }
     }

@@ -63,11 +63,18 @@ enum ContextReader {
     end tell
     """)
 
+    /// Set when macOS refused to let Halo ask Finder for its selection, so the ring can say
+    /// why it isn't showing file actions.
+    private(set) static var finderBlocked = false
+
     /// Read as a list rather than joined text, so a file name containing a
     /// newline can't split into paths that were never selected.
     static func finderSelection() -> [URL] {
         var error: NSDictionary?
-        guard let list = finderScript?.executeAndReturnError(&error), list.numberOfItems > 0 else { return [] }
+        let result = finderScript?.executeAndReturnError(&error)
+        // -1743 is errAEEventNotPermitted: the Automation permission was denied.
+        finderBlocked = (error?[NSAppleScript.errorNumber] as? Int) == -1743
+        guard let list = result, list.numberOfItems > 0 else { return [] }
         return (1...list.numberOfItems).compactMap { list.atIndex($0)?.stringValue }.map { URL(fileURLWithPath: $0) }
     }
 
@@ -90,7 +97,7 @@ enum ContextReader {
         let board = NSPasteboard.general
         let saved = PasteboardSnapshot(board)
         let before = board.changeCount
-        postShortcut(kVK_ANSI_C)
+        press(KeyLayout.translate(KeyCombo(kVK_ANSI_C, .command)))
         for _ in 0..<12 where board.changeCount == before {
             try? await Task.sleep(for: .milliseconds(25))
         }
@@ -107,14 +114,12 @@ enum ContextReader {
         let saved = PasteboardSnapshot(board)
         board.clearContents()
         board.setString(text, forType: .string)
-        postShortcut(kVK_ANSI_V)
+        // Tells clipboard managers this is a stand-in, not something the user copied.
+        board.setData(Data(), forType: NSPasteboard.PasteboardType("org.nspasteboard.TransientType"))
+        press(KeyLayout.translate(KeyCombo(kVK_ANSI_V, .command)))
         // Give the target app time to read the clipboard before restoring it.
         try? await Task.sleep(for: .milliseconds(600))
         saved.restore(to: board)
-    }
-
-    static func postShortcut(_ key: Int) {
-        press(KeyCombo(key, .command))
     }
 
     /// Presses a shortcut in the front app. A private event source keeps the keys
