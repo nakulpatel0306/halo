@@ -13,23 +13,24 @@
   <meta property="og:url" content="https://nakulpatel0306.github.io/halo/">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#0b0c10">
   <link rel="icon" href="media/icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --ink: #000;
-      --raised: #141416;
-      --raised-2: #1c1c1f;
-      --line: rgba(255, 255, 255, .09);
+      --ink: #0b0c10;
+      --ink-2: #13151b;
+      --raised: #1b1e26;
+      --paper: #f5f5f7;
+      --card: #ffffff;
       --text: #f2f2f3;
-      --muted: #8e8e93;
+      --muted: #9a9aa2;
+      --line: rgba(255, 255, 255, .09);
       --blue: #0a84ff;
       --clay: #d97857;
       --teal: #30b0c7;
-      --green: #30d158;
       --cyan: #64d2ff;
       --sans: 'Geist', -apple-system, system-ui, sans-serif;
       --mono: 'Geist Mono', ui-monospace, monospace;
@@ -41,16 +42,37 @@
     img, video { display: block; max-width: 100%; }
     h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.035em; line-height: 1.05; }
     p { margin: 0; }
+    button { font: inherit; color: inherit; }
     .wrap { width: min(1180px, 100% - 40px); margin-inline: auto; }
     :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 6px; }
 
+    /* Section tones: the page alternates dark and light, like a product page, instead of one long black sheet */
+    section { padding: 104px 0; }
+    .tone-2 { background: var(--ink-2); }
+    .light { background: var(--paper); color: #1d1d1f; --muted: #6e6e73; --line: rgba(0, 0, 0, .1); }
+    .head { max-width: 660px; margin-bottom: 48px; }
+    .head h2 { font-size: clamp(34px, 4.4vw, 54px); }
+    .head p { margin-top: 16px; color: var(--muted); font-size: 18.5px; }
+    .center { text-align: center; margin-inline: auto; }
+
+    /* The wallpaper's colours, softly behind the hero and the closing */
+    .aurora { position: relative; overflow: hidden; isolation: isolate; }
+    .aurora::before {
+      content: ''; position: absolute; inset: -30% -10% auto; height: 120%; z-index: -1;
+      background:
+        radial-gradient(40% 50% at 18% 30%, rgba(240, 112, 90, .28), transparent 70%),
+        radial-gradient(38% 45% at 62% 18%, rgba(123, 108, 246, .32), transparent 70%),
+        radial-gradient(40% 50% at 92% 55%, rgba(95, 174, 63, .2), transparent 70%);
+      filter: blur(20px);
+    }
+
     /* Nav */
-    .nav { position: sticky; top: 0; z-index: 20; background: rgba(0, 0, 0, .72); backdrop-filter: saturate(160%) blur(18px); -webkit-backdrop-filter: saturate(160%) blur(18px); border-bottom: 1px solid var(--line); }
+    .nav { position: sticky; top: 0; z-index: 20; background: rgba(11, 12, 16, .72); backdrop-filter: saturate(160%) blur(18px); -webkit-backdrop-filter: saturate(160%) blur(18px); border-bottom: 1px solid rgba(255, 255, 255, .08); }
     .nav .wrap { display: flex; align-items: center; height: 60px; gap: 28px; }
     .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 600; letter-spacing: -0.02em; }
     .brand img { width: 26px; height: 26px; }
     .nav nav { display: flex; align-items: center; gap: 26px; margin-left: auto; font-size: 14px; line-height: 1; }
-    .nav nav a { color: var(--muted); text-decoration: none; }
+    .nav nav a { color: #a1a1aa; text-decoration: none; }
     .nav nav a:hover { color: var(--text); }
     .nav nav a.get { color: #fff; background: var(--blue); padding: 9px 15px; border-radius: 999px; font-weight: 500; }
     @media (max-width: 720px) { .nav nav a:not(.get) { display: none; } }
@@ -60,98 +82,78 @@
     .button { display: inline-flex; align-items: center; gap: 9px; padding: 13px 22px; border-radius: 999px; background: var(--blue); color: #fff; font-weight: 500; text-decoration: none; line-height: 1; }
     .button:hover { background: #2490ff; }
     .button svg { width: 16px; height: 16px; }
-    .quiet { color: var(--text); text-decoration: none; padding: 13px 4px; line-height: 1; border-bottom: 1px solid transparent; }
+    .quiet { text-decoration: none; padding: 13px 4px; line-height: 1; border-bottom: 1px solid transparent; }
     .quiet:hover { border-bottom-color: var(--muted); }
-    kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 1.9em; height: 1.75em; padding: 0 .5em; border-radius: .38em; font: 500 .82em var(--mono); color: var(--text); background: linear-gradient(#2a2a2e, #1d1d20); border: 1px solid rgba(255, 255, 255, .14); border-bottom-width: 3px; box-shadow: 0 2px 6px rgba(0, 0, 0, .5); vertical-align: .1em; }
+    kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 1.9em; height: 1.75em; padding: 0 .5em; border-radius: .38em; font: 500 .82em var(--mono); color: var(--text); background: linear-gradient(#2c2e36, #1e2027); border: 1px solid rgba(255, 255, 255, .14); border-bottom-width: 3px; box-shadow: 0 2px 6px rgba(0, 0, 0, .5); vertical-align: .1em; }
+
+    .shot { border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: #000; box-shadow: 0 24px 60px -24px rgba(0, 0, 0, .7); }
+    .light .shot { box-shadow: 0 18px 44px -18px rgba(0, 0, 0, .35); }
+    .shot video, .shot img { width: 100%; height: auto; }
 
     /* Hero */
-    .hero { padding: 88px 0 72px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center; }
+    .hero { padding: 88px 0 104px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center; }
     .hero h1 { font-size: clamp(44px, 5.3vw, 72px); }
-    .hero .lead { margin: 26px 0 34px; font-size: 20px; color: var(--muted); max-width: 30em; }
+    .hero .lead { margin: 26px 0 34px; font-size: 20px; color: #b4b4bc; max-width: 30em; }
     .hero .lead kbd { font-size: 17px; }
     .meta { margin-top: 18px; font-size: 13.5px; color: var(--muted); }
-    .shot { position: relative; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: #000; box-shadow: 0 24px 60px -24px rgba(0, 0, 0, .9); }
-    .shot video, .shot img { width: 100%; height: auto; }
-    .note { margin-top: 12px; font-size: 13.5px; color: var(--muted); }
     @media (max-width: 920px) { .hero { grid-template-columns: 1fr; padding-top: 56px; gap: 40px; } }
 
-    section { padding: 96px 0; }
-    .head { max-width: 640px; margin-bottom: 44px; }
-    .head h2 { font-size: clamp(34px, 4.4vw, 54px); }
-    .head p { margin-top: 16px; color: var(--muted); font-size: 18.5px; }
-
-    /* Playground */
-    .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-    .tabs button { font: 500 14px var(--sans); color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
-    .tabs button[aria-selected="true"] { color: var(--text); background: var(--raised-2); border-color: rgba(255, 255, 255, .2); }
-    .pad { position: relative; height: 540px; border-radius: 20px; border: 1px solid var(--line); background: radial-gradient(120% 90% at 50% 0%, #121318 0%, #050506 70%); overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; cursor: crosshair; }
-    .pad .context { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: 88%; text-align: center; font-size: 19px; color: #d7d7da; pointer-events: none; transition: opacity .2s; }
-    .pad .context mark { background: rgba(10, 132, 255, .38); color: #fff; padding: 2px 3px; border-radius: 3px; }
-    .pad .context code { font: 500 16px var(--mono); }
-    .pad .context .file { display: inline-flex; flex-direction: column; align-items: center; gap: 10px; font-size: 14px; }
-    .pad .context .file i { width: 74px; height: 74px; border-radius: 12px; background: linear-gradient(160deg, #e9a46a, #8a4b3a 55%, #3a5a7a); outline: 3px solid rgba(10, 132, 255, .8); outline-offset: 3px; }
-    .pad .context .file span { background: var(--blue); color: #fff; padding: 2px 7px; border-radius: 5px; }
-    .pad .hint { position: absolute; left: 0; right: 0; bottom: 22px; text-align: center; font-size: 14px; color: var(--muted); pointer-events: none; }
-    .pad .result { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); display: none; align-items: center; gap: 12px; max-width: calc(100% - 32px); padding: 12px 18px; border-radius: 14px; background: rgba(40, 40, 44, .9); border: 1px solid rgba(255, 255, 255, .12); backdrop-filter: blur(14px); font-size: 14.5px; pointer-events: none; }
-    .pad .result b { font-weight: 600; white-space: nowrap; }
-    .pad .result span { color: #c7c7cc; }
-    .pad .result i { flex: none; width: 9px; height: 9px; border-radius: 50%; }
-    .pad.showing .result { display: flex; }
-    .pad.showing .hint, .pad.open .hint { visibility: hidden; }
-    .pad.open .context { opacity: .35; }
-    .ring { position: absolute; width: 320px; height: 320px; margin: -160px 0 0 -160px; pointer-events: none; opacity: 0; transform: scale(.86); transition: opacity .16s, transform .32s cubic-bezier(.3, 1.4, .5, 1); }
-    .pad.open .ring { opacity: 1; transform: scale(1); }
-    .ring .slice { fill: rgba(44, 44, 48, .94); stroke: rgba(0, 0, 0, .55); stroke-width: 1.5; }
-    .ring .slice.on { fill: var(--blue); }
-    .ring .hub { fill: rgba(28, 28, 31, .98); stroke: rgba(255, 255, 255, .08); }
-    .ring text { font: 600 11px var(--sans); fill: #e8e8ea; text-anchor: middle; }
-    .ring .on-label { fill: #fff; }
-    .ring .caption { font-size: 12.5px; fill: #c7c7cc; }
-    .ring .dot { stroke: none; }
-    .ring .more { font-size: 9px; fill: #8e8e93; }
-    @media (prefers-reduced-motion: reduce) { .ring { transition: opacity .1s; transform: none; } }
-    @media (max-width: 600px) { .pad { height: 460px; } }
-
-    /* Real recording */
-    .split { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 56px; align-items: center; }
-    .split .head { margin: 0; }
-    .facts { margin: 28px 0 0; padding: 0; list-style: none; display: grid; gap: 14px; }
-    .facts li { padding-left: 22px; position: relative; color: #d7d7da; }
-    .facts li::before { content: ''; position: absolute; left: 0; top: .62em; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--blue)); }
-    .split.flip { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
-    .split.flip .shot { order: 2; }
-    @media (max-width: 920px) { .split, .split.flip { grid-template-columns: 1fr; gap: 32px; } .split .shot { order: 2; } }
+    /* Showcase carousel */
+    .tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { position: relative; flex: none; display: flex; align-items: center; gap: 9px; padding: 8px 14px 8px 8px; border-radius: 14px; border: 1px solid var(--line); background: transparent; cursor: pointer; color: var(--muted); font-size: 14.5px; font-weight: 500; overflow: hidden; }
+    .tab img { width: 28px; height: 28px; }
+    .tab[aria-selected="true"] { color: var(--text); background: var(--raised); border-color: rgba(255, 255, 255, .16); }
+    .tab .bar { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--blue); }
+    .stage { position: relative; aspect-ratio: 16 / 9; }
+    .stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .35s; }
+    .stage video.on { opacity: 1; }
+    .step { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .25); background: rgba(20, 20, 26, .55); backdrop-filter: blur(10px); cursor: pointer; display: grid; place-items: center; z-index: 2; }
+    .step:hover { background: rgba(20, 20, 26, .8); }
+    .step svg { width: 18px; height: 18px; }
+    .step.prev { left: 16px; }
+    .step.next { right: 16px; }
+    .caption { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: start; margin-top: 26px; min-height: 92px; }
+    .caption h3 { font-size: 26px; letter-spacing: -0.025em; }
+    .caption p { margin-top: 8px; color: var(--muted); font-size: 16.5px; max-width: 44em; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; max-width: 380px; }
+    .chips span { font-size: 13px; padding: 5px 10px; border-radius: 999px; background: var(--raised); border: 1px solid var(--line); color: #c7c7cf; }
+    @media (max-width: 760px) { .caption { grid-template-columns: 1fr; } .chips { justify-content: flex-start; } .step { width: 36px; height: 36px; } }
 
     /* Rings */
-    .rings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
-    .rings article { background: var(--ink); padding: 30px 28px 32px; }
-    .rings img { width: 62%; margin: 0 auto 22px; }
-    .rings h3 { font-size: 21px; letter-spacing: -0.02em; }
+    .rings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .rings article { background: var(--card); border-radius: 20px; padding: 28px 26px 30px; box-shadow: 0 1px 2px rgba(0, 0, 0, .04); }
+    /* The render's shadow is clipped square at the image edge; fade it out radially */
+    .rings img { width: 64%; margin: 0 auto 22px; -webkit-mask-image: radial-gradient(circle, #000 60%, transparent 71%); mask-image: radial-gradient(circle, #000 60%, transparent 71%); }
+    .rings h3 { font-size: 20px; letter-spacing: -0.02em; }
     .rings p { margin-top: 8px; color: var(--muted); font-size: 15.5px; }
+    .light .note { margin-top: 18px; font-size: 14px; color: var(--muted); }
     @media (max-width: 920px) { .rings { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 600px) { .rings { grid-template-columns: 1fr; } }
 
     /* Settings */
-    .settings { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 20px; }
+    .settings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px 28px; }
     .settings figure { margin: 0; }
-    .settings figure:first-child { grid-row: span 2; }
-    .settings figcaption { margin-top: 12px; font-size: 15px; color: var(--muted); }
-    .settings figcaption b { color: var(--text); font-weight: 500; }
-    @media (max-width: 920px) { .settings { grid-template-columns: 1fr; } .settings figure:first-child { grid-row: auto; } }
+    .settings figcaption { margin-top: 16px; }
+    .settings figcaption b { display: block; font-size: 18px; font-weight: 600; letter-spacing: -0.015em; }
+    .settings figcaption span { display: block; margin-top: 4px; font-size: 15.5px; color: var(--muted); }
+    @media (max-width: 760px) { .settings { grid-template-columns: 1fr; } }
 
     /* Privacy */
-    .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; border-top: 1px solid var(--line); padding-top: 36px; }
+    .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .three div { background: var(--card); border-radius: 20px; padding: 28px 26px; }
+    .three svg { width: 26px; height: 26px; color: var(--blue); margin-bottom: 18px; }
     .three h3 { font-size: 19px; letter-spacing: -0.015em; }
     .three p { margin-top: 10px; color: var(--muted); font-size: 15.5px; }
-    @media (max-width: 760px) { .three { grid-template-columns: 1fr; gap: 28px; } }
+    @media (max-width: 760px) { .three { grid-template-columns: 1fr; } }
 
     /* Install */
     .steps { margin: 0; padding: 0; list-style: none; counter-reset: step; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-    .steps li { counter-increment: step; background: var(--raised); border: 1px solid var(--line); border-radius: 16px; padding: 24px 22px 26px; }
-    .steps li::before { content: counter(step); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--raised-2); border: 1px solid rgba(255, 255, 255, .14); font: 500 14px var(--mono); margin-bottom: 18px; }
+    .steps li { counter-increment: step; background: var(--raised); border: 1px solid var(--line); border-radius: 18px; padding: 24px 22px 26px; }
+    .steps li::before { content: counter(step); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--blue); color: #fff; font: 500 14px var(--mono); margin-bottom: 18px; }
     .steps h3 { font-size: 17.5px; letter-spacing: -0.01em; line-height: 1.3; }
     .steps p { margin-top: 8px; font-size: 14.5px; color: var(--muted); }
-    .steps code { font: 500 13px var(--mono); color: var(--text); background: var(--raised-2); padding: 1px 6px; border-radius: 5px; }
+    .steps code { font: 500 13px var(--mono); color: var(--text); background: #262a33; padding: 1px 6px; border-radius: 5px; }
     @media (max-width: 980px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 560px) { .steps { grid-template-columns: 1fr; } }
 
@@ -164,20 +166,21 @@
     summary::after { content: '+'; position: absolute; right: 4px; top: 16px; font-size: 24px; font-weight: 400; color: var(--muted); transition: transform .2s; }
     details[open] summary::after { transform: rotate(45deg); }
     details p { padding: 0 36px 22px 0; color: var(--muted); font-size: 16px; }
-    details code { font: 500 14px var(--mono); color: var(--text); }
     @media (max-width: 860px) { .faq { grid-template-columns: 1fr; gap: 24px; } }
 
-    .closing { text-align: center; padding: 120px 0 130px; }
+    .closing { text-align: center; padding: 130px 0 140px; }
     .closing img { width: 84px; height: 84px; margin: 0 auto 28px; }
     .closing h2 { font-size: clamp(40px, 5.5vw, 68px); }
-    .closing p { margin: 16px 0 34px; color: var(--muted); font-size: 19px; }
+    .closing p { margin: 16px 0 34px; color: #b4b4bc; font-size: 19px; }
     .closing .actions { justify-content: center; }
 
-    footer { border-top: 1px solid var(--line); padding: 30px 0 44px; font-size: 14px; color: var(--muted); }
+    footer { border-top: 1px solid rgba(255, 255, 255, .08); padding: 30px 0 44px; font-size: 14px; color: var(--muted); }
     footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 28px; justify-content: space-between; }
     footer nav { display: flex; gap: 22px; }
     footer a { color: var(--muted); }
     footer a:hover { color: var(--text); }
+
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .stage video { transition: none; } }
   </style>
 </head>
 <body>
@@ -185,7 +188,7 @@
     <div class="wrap">
       <a class="brand" href="#top"><img src="media/icon.png" alt="">Halo</a>
       <nav aria-label="Main">
-        <a href="#try">Try it</a>
+        <a href="#apps">In action</a>
         <a href="#rings">Rings</a>
         <a href="#install">Install</a>
         <a href="#faq">FAQ</a>
@@ -196,97 +199,49 @@
   </header>
 
   <main id="top">
-    <div class="wrap hero">
-      <div>
-        <h1>One shortcut.<br>Every app.</h1>
-        <p class="lead">Hold <kbd>⌥</kbd> <kbd>Space</kbd> anywhere on your Mac and a ring of actions opens at your cursor, made for whatever you're pointing at. Flick toward one and let go.</p>
-        <div class="actions">
-          <a class="button" href="https://github.com/nakulpatel0306/halo/releases/latest/download/Halo.zip">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8.5M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg>
-            Download for Mac
-          </a>
-          <a class="quiet" href="https://github.com/nakulpatel0306/halo">View the code</a>
+    <div class="aurora">
+      <div class="wrap hero">
+        <div>
+          <h1>One shortcut.<br>Every app.</h1>
+          <p class="lead">Hold <kbd>⌥</kbd> <kbd>Space</kbd> anywhere on your Mac and a ring of actions opens at your cursor, made for whatever you're pointing at. Flick toward one and let go.</p>
+          <div class="actions">
+            <a class="button" href="https://github.com/nakulpatel0306/halo/releases/latest/download/Halo.zip">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8.5M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg>
+              Download for Mac
+            </a>
+            <a class="quiet" href="https://github.com/nakulpatel0306/halo">View the code</a>
+          </div>
+          <p class="meta" id="version">Free and open source. macOS 14 or later, Apple silicon and Intel.</p>
         </div>
-        <p class="meta" id="version">Free and open source. macOS 14 or later, Apple silicon and Intel.</p>
-      </div>
-      <div>
         <div class="shot">
           <video data-src="media/hero.mp4" poster="media/hero.jpg" muted loop playsinline aria-label="Halo rewriting a draft email in Mail with Claude"></video>
         </div>
       </div>
     </div>
 
-    <section id="try">
+    <section id="apps" class="tone-2">
       <div class="wrap">
         <div class="head">
-          <h2>Try the gesture.</h2>
-          <p>Press and hold anywhere in the panel, move toward an action and let go. Or tap to keep the ring open and click. It changes with what you point at, same as on your Mac.</p>
+          <h2>One ring, made for each app.</h2>
+          <p>Halo changes with what you're pointing at. Files get conversions, editors get their own shortcuts, chats get help with texting.</p>
         </div>
-        <div class="tabs" role="tablist" aria-label="What you're pointing at"></div>
-        <div class="pad" id="pad" tabindex="0" aria-describedby="pad-help">
-          <div class="context" id="context"></div>
-          <svg class="ring" id="ring" viewBox="-160 -160 320 320" aria-hidden="true"></svg>
-          <p class="hint" id="pad-help">Hold to open, or press <kbd>⌥</kbd> <kbd>Space</kbd>. Arrow keys and Return work too.</p>
-          <div class="result" role="status" aria-live="polite"><i></i><b></b><span></span></div>
+        <div class="tabs" role="tablist" aria-label="Apps"></div>
+        <div class="shot stage" id="stage">
+          <button class="step prev" type="button" aria-label="Previous"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg></button>
+          <button class="step next" type="button" aria-label="Next"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg></button>
         </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="wrap split">
-        <div class="shot">
-          <video data-src="media/convert.mp4" poster="media/convert.jpg" muted loop playsinline aria-label="Halo converting a HEIC photo to PNG in Finder"></video>
-        </div>
-        <div class="head">
-          <h2>Files, without opening an app.</h2>
-          <p>Select something in Finder and Convert offers only the formats it can become. The new file lands next to the original, which is never touched.</p>
-          <ul class="facts">
-            <li style="--c: var(--teal)">Images, PDFs, audio and video, using the converters built into macOS</li>
-            <li style="--c: var(--teal)">Compress, resize, merge PDFs, zip and unzip</li>
-            <li style="--c: var(--clay)">Lecture slides into study notes or Anki flashcards with Claude</li>
-          </ul>
+        <div class="caption" aria-live="polite">
+          <div><h3 id="slide-title"></h3><p id="slide-text"></p></div>
+          <div class="chips" id="slide-chips"></div>
         </div>
       </div>
     </section>
 
-    <section>
-      <div class="wrap split flip">
-        <div class="shot">
-          <video data-src="media/ghostty.mp4" poster="media/ghostty.jpg" muted loop playsinline aria-label="Starting Claude Code from Halo's ring in Ghostty"></video>
-        </div>
-        <div class="head">
-          <h2>Built for your terminal and editor.</h2>
-          <p>In Ghostty, VS Code and Cursor the ring becomes that app's own shortcuts. Start Claude Code, split a pane, open the terminal or comment a line without remembering a single key combo.</p>
-          <ul class="facts">
-            <li style="--c: var(--cyan)">Ghostty: Claude Code, splits, zoom, jump between prompts</li>
-            <li style="--c: var(--cyan)">VS Code and Cursor: Commands, Go to File, Terminal, Comment, Format</li>
-            <li style="--c: var(--clay)">Highlight a diff and get a commit message</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="wrap split">
-        <div class="shot">
-          <video data-src="media/messages.mp4" poster="media/messages.jpg" muted loop playsinline aria-label="Halo explaining a text in Messages"></video>
-        </div>
-        <div class="head">
-          <h2>Help with texting.</h2>
-          <p>In Messages, ask what their last text actually meant, sum up the chat, or rewrite the reply you're typing before you send it. No highlighting needed.</p>
-          <ul class="facts">
-            <li style="--c: var(--clay)">Explain their last text, or sum up the conversation</li>
-            <li style="--c: var(--clay)">Rewrite your reply Funnier, Friendlier, Serious or Flirty</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section id="rings">
+    <section id="rings" class="light">
       <div class="wrap">
         <div class="head">
           <h2>A ring for whatever you're pointing at.</h2>
-          <p>Each action keeps its direction, like numbers on a watch, so after a day you flick without looking. These are rendered straight from Halo's own ring code.</p>
+          <p>Each action keeps its direction, like numbers on a watch, so after a day you flick without looking.</p>
         </div>
         <div class="rings">
           <article><img src="media/ring-text.png" alt="The Text ring" loading="lazy"><h3>Highlighted text</h3><p>Professional, Fix Grammar, Shorter, Explain, Reply, Study Notes, Flashcards and a commit message from a diff.</p></article>
@@ -307,25 +262,35 @@
           <p>Drag any of 100+ tools onto any ring, or add your own Claude prompts, shortcuts, links and scripts. Size, text and motion all bend to how you work.</p>
         </div>
         <div class="settings">
-          <figure><div class="shot"><img src="media/settings-ring-editor.jpg" alt="Halo's Ring Editor with the tool library" loading="lazy"></div><figcaption><b>Ring Editor.</b> Drag tools in and out of each ring.</figcaption></figure>
-          <figure><div class="shot"><img src="media/settings-size-and-motion.jpg" alt="Appearance settings for ring size, text size and animation" loading="lazy"></div><figcaption><b>Easy on the eyes.</b> Bigger ring and text, names on or off, animations off.</figcaption></figure>
-          <figure><div class="shot"><img src="media/settings-app-rings.jpg" alt="App Rings settings listing each app's ring" loading="lazy"></div><figcaption><b>App rings.</b> Each app's ring is yours to edit.</figcaption></figure>
+          <figure><div class="shot"><img src="media/settings-ring-editor.jpg" alt="Halo's Ring Editor with the tool library" loading="lazy"></div><figcaption><b>Ring Editor</b><span>Drag tools in and out of each ring from a library of 100+.</span></figcaption></figure>
+          <figure><div class="shot"><img src="media/settings-app-rings.jpg" alt="App Rings settings listing each app's ring" loading="lazy"></div><figcaption><b>App rings</b><span>A ring for each app, each one yours to edit.</span></figcaption></figure>
+          <figure><div class="shot"><img src="media/settings-appearance.jpg" alt="Appearance settings with a live ring preview" loading="lazy"></div><figcaption><b>Appearance</b><span>Accent colour, light or dark, glass or solid, with a live preview.</span></figcaption></figure>
+          <figure><div class="shot"><img src="media/settings-size-and-motion.jpg" alt="Settings for ring size, text size and animation" loading="lazy"></div><figcaption><b>Easy on the eyes</b><span>Bigger ring and text, names on or off, animations off.</span></figcaption></figure>
         </div>
       </div>
     </section>
 
-    <section>
+    <section class="light">
       <div class="wrap">
         <div class="head"><h2>Yours, on your Mac.</h2></div>
         <div class="three">
-          <div><h3>Local by default</h3><p>Text tools and file conversions run on your Mac with macOS's own converters. Results are saved next to the original, never over it.</p></div>
-          <div><h3>Claude only when you ask</h3><p>Claude actions send only what you selected, through your own Claude Code login or API key. Nothing else leaves your Mac.</p></div>
-          <div><h3>No account, no tracking</h3><p>No sign-up and no analytics. The only other request is a daily check on GitHub for a new version.</p></div>
+          <div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+            <h3>Local by default</h3><p>Text tools and file conversions run on your Mac with macOS's own converters. Results are saved next to the original, never over it.</p>
+          </div>
+          <div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.1 5.4L19.5 10.5l-5.4 2.1L12 18l-2.1-5.4L4.5 10.5l5.4-2.1z"/></svg>
+            <h3>Claude only when you ask</h3><p>Claude actions send only what you selected, through your own Claude Code login or API key. Nothing else leaves your Mac.</p>
+          </div>
+          <div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
+            <h3>No account, no tracking</h3><p>No sign-up and no analytics. The only other request is a daily check on GitHub for a new version.</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <section id="install">
+    <section id="install" class="tone-2">
       <div class="wrap">
         <div class="head">
           <h2>Install in a minute.</h2>
@@ -340,7 +305,7 @@
       </div>
     </section>
 
-    <section id="faq">
+    <section id="faq" class="light">
       <div class="wrap faq">
         <div class="head"><h2>Questions.</h2></div>
         <div>
@@ -356,7 +321,7 @@
       </div>
     </section>
 
-    <div class="closing">
+    <div class="aurora closing">
       <div class="wrap">
         <img src="media/icon.png" alt="">
         <h2>Hold. Flick. Done.</h2>
@@ -379,22 +344,19 @@
   </footer>
 
   <script>
-    // Videos load and play only once they're on screen, so the page opens fast
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches
-    const seen = new IntersectionObserver((entries) => {
-      for (const { target, isIntersecting } of entries) {
-        if (isIntersecting) {
-          if (!target.src) target.src = target.dataset.src
-          if (!still) target.play().catch(() => {})
-        } else {
-          target.pause()
-        }
+
+    // The hero video loads and plays only once it's on screen, so the page opens fast
+    const hero = document.querySelector('.hero video')
+    new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        if (!hero.src) hero.src = hero.dataset.src
+        if (!still) hero.play().catch(() => {})
+      } else {
+        hero.pause()
       }
-    }, { rootMargin: '200px' })
-    document.querySelectorAll('video[data-src]').forEach((v) => {
-      if (still) v.controls = true
-      seen.observe(v)
-    })
+    }, { rootMargin: '200px' }).observe(hero)
+    if (still) hero.controls = true
 
     // Name the version the Download button will fetch
     fetch('https://api.github.com/repos/nakulpatel0306/halo/releases/latest')
@@ -406,228 +368,87 @@
       })
       .catch(() => {})
 
-    // The playground: Halo's real ring layouts and action descriptions, with its hold, tap and cancel rules
-    const tint = { ai: 'var(--clay)', text: 'var(--blue)', convert: 'var(--teal)', image: '#ff375f', document: '#ff453a', files: '#ac8e68', capture: 'var(--green)', system: '#98989d', app: 'var(--cyan)' }
-    const formats = ['JPG', 'PNG', 'AVIF', 'PDF', 'GIF', 'TIFF', 'ICNS'].map((f) => [f, 'convert', `Saves IMG_2041.${f.toLowerCase()} next to the original`])
-    const rings = {
-      Text: {
-        caption: '30 words',
-        context: '<mark>hey can u send me the q3 report by tmrw?? its kinda urgent bc the meeting got moved up. thx</mark>',
-        slices: [
-          ['Professional', 'ai', 'Rewrites it polished, clear and confident, right where you typed it'],
-          ['Fix Grammar', 'ai', 'Fixes spelling, grammar and punctuation only'],
-          ['Shorter', 'ai', 'Same message in fewer words'],
-          ['Explain', 'ai', 'Copies a plain-language explanation'],
-          ['Study Notes', 'ai', 'Copies Markdown study notes, ready for Obsidian or Notion'],
-          ['Flashcards', 'ai', 'Copies Anki-ready flashcards'],
-          ['Better Prompt', 'ai', 'Rewrites a rough request into a clear prompt for an AI'],
-          ['Reply', 'ai', 'Copies a reply to this message'],
-          ['Commit Msg', 'ai', 'Copies a commit message for a selected diff'],
-          ['Text Tools', 'text', 'Opens case, sorting, JSON and encoding tools'],
-        ],
-      },
-      Finder: {
-        caption: 'IMG_2041.heic',
-        context: '<span class="file"><i></i><span>IMG_2041.heic</span></span>',
-        slices: [
-          ['Convert', 'convert', 'Opens every format the selection can become', formats],
-          ['Compress', 'convert', 'Smaller images, PDFs and videos'],
-          ['Copy Text', 'image', 'Copies the text in images or PDFs, read on your Mac'],
-          ['Copy for AI', 'files', 'Copies code and text files as Markdown to paste into Claude'],
-          ['Summarize', 'ai', 'Claude reads the files and copies a summary'],
-          ['Study Notes', 'ai', 'Claude turns lecture slides or readings into Markdown notes'],
-          ['Flashcards', 'ai', 'Claude writes Anki-ready flashcards from the files'],
-          ['Cursor', 'files', 'Opens it in Cursor'],
-          ['Merge', 'document', 'Joins selected PDFs into one'],
-          ['Zip', 'files', 'Zips files, or unzips archives'],
-        ],
-      },
-      'VS Code': {
-        caption: 'VS Code',
-        context: '<code>src/server.ts</code>',
-        slices: [
-          ['Commands', 'app', 'Opens the Command Palette'],
-          ['Go to File', 'app', 'Quick Open'],
-          ['Terminal', 'app', 'Toggles the terminal'],
-          ['Sidebar', 'app', 'Toggles the sidebar'],
-          ['Format', 'app', 'Formats the document'],
-          ['Comment', 'app', 'Toggles a line comment'],
-          ['Source Ctrl', 'app', 'Opens Source Control'],
-          ['Find in Files', 'app', 'Searches the workspace'],
-        ],
-      },
-      Ghostty: {
-        caption: 'Ghostty',
-        context: '<code>~/dev/api main ❯</code>',
-        slices: [
-          ['Claude Code', 'app', 'Types claude and runs it'],
-          ['New Tab', 'app', 'Opens a new tab'],
-          ['Split Right', 'app', 'Splits right'],
-          ['Split Down', 'app', 'Splits down'],
-          ['Zoom Split', 'app', 'Zooms the split'],
-          ['Equalize', 'app', 'Evens out the splits'],
-          ['Prev Prompt', 'app', 'Jumps to the previous prompt'],
-          ['Next Prompt', 'app', 'Jumps to the next prompt'],
-          ['Clear', 'app', 'Clears the screen'],
-          ['Close', 'app', 'Closes the split or tab'],
-        ],
-      },
-      Messages: {
-        caption: 'Messages',
-        context: 'ngl the vibes were immaculate<br>but the fit check was mid fr',
-        slices: [
-          ['Explain', 'ai', 'What their last text, or the selection, means'],
-          ['Sum Up Chat', 'ai', 'Summarizes the open conversation'],
-          ['Flirty', 'ai', 'Rewrites your reply playful and a little teasing'],
-          ['Friendlier', 'ai', 'Rewrites your reply warmer and more casual'],
-          ['Serious', 'ai', 'Rewrites your reply sincere and direct'],
-          ['Funnier', 'ai', 'Same point with some wit'],
-          ['Fix Grammar', 'ai', 'Spelling, grammar and punctuation only'],
-          ['Shorter', 'ai', 'Same message in fewer words'],
-        ],
-      },
-      Anywhere: {
-        caption: 'Halo',
-        context: 'Nothing selected',
-        slices: [
-          ['Screenshot', 'capture', 'Captures an area to the clipboard'],
-          ['Grab Text', 'capture', 'Select an area and copy the text in it'],
-          ['Pick Color', 'capture', "Copies any pixel's hex color"],
-          ['Polish Copy', 'ai', 'Makes copied text professional'],
-          ['Paste Plain', 'text', 'Pastes without formatting'],
-          ['Keep Awake', 'system', 'Stops the Mac sleeping until you turn it off'],
-          ['Settings', 'system', 'Opens Halo settings'],
-        ],
-      },
-    }
-
-    const pad = document.getElementById('pad')
-    const ring = document.getElementById('ring')
+    // The showcase: one clip per app, each advancing to the next when it ends
+    const slides = [
+      { app: 'Finder', icon: 'finder', video: 'convert', title: 'Convert files without opening an app.', text: 'Select a photo in Finder, flick to Convert, and pick a format. Only the formats it can actually become are offered, and the new file lands next to the original.', chips: ['Convert', 'Compress', 'Copy Text', 'Merge PDFs', 'Zip'] },
+      { app: 'VS Code', icon: 'vscode', video: 'vscode', title: "Your editor's shortcuts, at your cursor.", text: 'Open the terminal, comment a line, hide the sidebar. Halo presses VS Code\'s own shortcuts, so there are none to remember.', chips: ['Commands', 'Go to File', 'Terminal', 'Comment', 'Format'] },
+      { app: 'Ghostty', icon: 'ghostty', video: 'ghostty', title: 'Claude Code, one flick away.', text: 'Ghostty\'s ring types claude and runs it, then splits the pane when you need another shell.', chips: ['Claude Code', 'Split Right', 'Split Down', 'Zoom Split', 'Clear'] },
+      { app: 'Commit messages', icon: 'ghostty', video: 'commit', title: 'A diff becomes a commit message.', text: 'Highlight a diff anywhere, flick to Commit Msg, and Claude writes the message. In a terminal it goes to the clipboard, so nothing runs by accident.', chips: ['Commit Msg', 'Explain', 'Better Prompt'] },
+      { app: 'Messages', icon: 'messages', video: 'messages', title: 'Finally understand the group chat.', text: 'Flick to Explain and Claude reads the conversation and tells you what their last text actually meant.', chips: ['Explain', 'Sum Up Chat'] },
+      { app: 'Replies', icon: 'messages', video: 'funnier', title: 'Rewrite a reply before you send it.', text: 'No highlighting needed. Halo rewrites the message you\'re typing, Funnier, Friendlier, Serious or Flirty.', chips: ['Funnier', 'Friendlier', 'Serious', 'Flirty', 'Shorter'] },
+      { app: 'Cursor', icon: 'cursor', video: 'cursor', title: "Cursor's AI, from its own ring.", text: 'Cursor gets the editor shortcuts plus its chat, edit and agent panels, all one flick away.', chips: ['AI Chat', 'AI Edit', 'Agent', 'Terminal'] },
+    ]
+    const stage = document.getElementById('stage')
     const tabs = document.querySelector('.tabs')
-    const result = pad.querySelector('.result')
-    const R = 150, HUB = 58, DEAD = 34, HOLD = 280
-    let current = 'Text', items = [], caption = '', hovered = -1, center = null, pressedAt = 0, tapMode = false, last = null
-
-    for (const name of Object.keys(rings)) {
+    const videos = slides.map((s) => {
+      const v = document.createElement('video')
+      v.muted = true
+      v.playsInline = true
+      v.preload = 'none'
+      v.poster = `media/${s.video}.jpg`
+      v.dataset.src = `media/${s.video}.mp4`
+      v.setAttribute('aria-label', s.title)
+      stage.prepend(v)
+      return v
+    })
+    const buttons = slides.map((s, i) => {
       const b = document.createElement('button')
+      b.className = 'tab'
+      b.type = 'button'
       b.role = 'tab'
-      b.textContent = name
-      b.addEventListener('click', () => choose(name))
+      b.innerHTML = `<img src="media/app-${s.icon}.png" alt="">${s.app}<i class="bar"></i>`
+      b.addEventListener('click', () => show(i, true))
       tabs.append(b)
+      return b
+    })
+    let current = -1, visible = false
+
+    function load(v) { if (!v.src) v.src = v.dataset.src }
+
+    function show(i, chosen = false) {
+      i = (i + slides.length) % slides.length
+      if (i !== current) {
+        videos[current]?.pause()
+        videos[current]?.classList.remove('on')
+        buttons[current]?.setAttribute('aria-selected', 'false')
+        if (buttons[current]) buttons[current].querySelector('.bar').style.width = '0'
+        current = i
+        const s = slides[i]
+        document.getElementById('slide-title').textContent = s.title
+        document.getElementById('slide-text').textContent = s.text
+        document.getElementById('slide-chips').innerHTML = s.chips.map((c) => `<span>${c}</span>`).join('')
+        buttons[i].setAttribute('aria-selected', 'true')
+        if (chosen) buttons[i].scrollIntoView({ block: 'nearest', inline: 'nearest' })
+      }
+      const v = videos[i]
+      v.classList.add('on')
+      if (v.src) v.currentTime = 0
+      if (visible) wake()
     }
 
-    function choose(name) {
-      current = name
-      close()
-      for (const b of tabs.children) b.setAttribute('aria-selected', b.textContent === name)
-      document.getElementById('context').innerHTML = rings[name].context
-      pad.classList.remove('showing')
+    // Only the showing clip and the next one download, and only once the carousel is on screen
+    function wake() {
+      const v = videos[current]
+      load(v)
+      load(videos[(current + 1) % slides.length])
+      if (!still) v.play().catch(() => {})
     }
 
-    const polar = (a, r) => [Math.sin(a) * r, -Math.cos(a) * r]
-    function draw() {
-      const n = items.length, step = (Math.PI * 2) / n
-      let svg = ''
-      items.forEach(([label, kind, , sub], i) => {
-        const a0 = i * step - step / 2, a1 = a0 + step
-        const [x0, y0] = polar(a0, R), [x1, y1] = polar(a1, R), [x2, y2] = polar(a1, HUB + 4), [x3, y3] = polar(a0, HUB + 4)
-        const on = i === hovered
-        svg += `<path class="slice${on ? ' on' : ''}" d="M${x0} ${y0}A${R} ${R} 0 0 1 ${x1} ${y1}L${x2} ${y2}A${HUB + 4} ${HUB + 4} 0 0 0 ${x3} ${y3}Z"/>`
-        const [cx, cy] = polar(i * step, (R + HUB) / 2 + 4)
-        svg += `<circle class="dot" cx="${cx}" cy="${cy - 11}" r="5" fill="${on ? '#fff' : tint[kind]}"/>`
-        svg += `<text class="${on ? 'on-label' : ''}" x="${cx}" y="${cy + 9}">${label}</text>`
-        if (sub) svg += `<text class="more" x="${cx + 12}" y="${cy - 8}">•••</text>`
+    videos.forEach((v, i) => {
+      v.addEventListener('timeupdate', () => {
+        if (i === current && v.duration) buttons[i].querySelector('.bar').style.width = `${(v.currentTime / v.duration) * 100}%`
       })
-      svg += `<circle class="hub" r="${HUB}"/><text class="caption" y="4">${hovered >= 0 ? items[hovered][0] : caption}</text>`
-      ring.innerHTML = svg
-    }
-
-    function open(x, y, list = rings[current].slices, cap = rings[current].caption) {
-      const box = pad.getBoundingClientRect()
-      center = { x: Math.min(Math.max(x, R + 8), box.width - R - 8), y: Math.min(Math.max(y, R + 8), box.height - R - 8) }
-      items = list
-      caption = cap
-      hovered = -1
-      ring.style.left = center.x + 'px'
-      ring.style.top = center.y + 'px'
-      draw()
-      pad.classList.remove('showing')
-      pad.classList.add('open')
-    }
-
-    function close() {
-      pad.classList.remove('open')
-      center = null
-      tapMode = false
-    }
-
-    function track(x, y) {
-      if (!center) return
-      const dx = x - center.x, dy = y - center.y
-      const index = Math.hypot(dx, dy) < DEAD ? -1 : Math.round(((Math.atan2(dx, -dy) + Math.PI * 2) % (Math.PI * 2)) / ((Math.PI * 2) / items.length)) % items.length
-      if (index !== hovered) { hovered = index; draw() }
-    }
-
-    function run() {
-      if (hovered < 0) { close(); return }
-      const [label, kind, text, sub] = items[hovered]
-      if (sub) {
-        // Slices with ••• open a second ring in place and wait for a click, like the app
-        open(center.x, center.y, sub, label)
-        tapMode = true
-        return
-      }
-      close()
-      result.querySelector('i').style.background = tint[kind]
-      result.querySelector('b').textContent = label
-      result.querySelector('span').textContent = text
-      pad.classList.add('showing')
-    }
-
-    const local = (e) => { const b = pad.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top] }
-    pad.addEventListener('pointerdown', (e) => {
-      const [x, y] = local(e)
-      if (center && tapMode) { track(x, y); run(); return }
-      pad.setPointerCapture(e.pointerId)
-      pressedAt = performance.now()
-      open(x, y)
+      v.addEventListener('ended', () => { if (i === current) show(i + 1) })
     })
-    pad.addEventListener('pointermove', (e) => { last = local(e); track(...last) })
-    pad.addEventListener('pointerup', (e) => {
-      if (!center || tapMode) return
-      // A quick tap leaves the ring open for a click instead of choosing
-      if (performance.now() - pressedAt < HOLD && hovered < 0) { tapMode = true; return }
-      track(...local(e))
-      run()
-    })
-
-    let keyHeld = false
-    pad.addEventListener('keydown', (e) => {
-      if (e.altKey && e.code === 'Space') {
-        e.preventDefault()
-        if (keyHeld) return
-        keyHeld = true
-        const b = pad.getBoundingClientRect()
-        open(...(last ?? [b.width / 2, b.height / 2]))
-      } else if (center && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
-        e.preventDefault()
-        hovered = ((hovered < 0 ? 0 : hovered + (e.key === 'ArrowRight' ? 1 : -1)) + items.length) % items.length
-        tapMode = true
-        draw()
-      } else if (center && e.key === 'Enter') {
-        e.preventDefault()
-        run()
-      } else if (e.key === 'Escape') {
-        close()
-      }
-    })
-    pad.addEventListener('keyup', (e) => {
-      if (e.code !== 'Space' || !keyHeld) return
-      keyHeld = false
-      if (center && !tapMode) { if (hovered >= 0) run(); else tapMode = true }
-    })
-
-    choose('Text')
+    stage.querySelector('.prev').addEventListener('click', () => show(current - 1, true))
+    stage.querySelector('.next').addEventListener('click', () => show(current + 1, true))
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting
+      if (visible) wake()
+      else videos[current].pause()
+    }, { threshold: 0.35 }).observe(stage)
+    if (still) videos.forEach((v) => { v.controls = true })
+    show(0)
   </script>
 </body>
 </html>
