@@ -21,10 +21,7 @@
   <style>
     :root {
       --ink: #0b0c10;
-      --ink-2: #13151b;
       --raised: #1b1e26;
-      --paper: #f5f5f7;
-      --card: #ffffff;
       --text: #f2f2f3;
       --muted: #9a9aa2;
       --line: rgba(255, 255, 255, .09);
@@ -46,25 +43,21 @@
     .wrap { width: min(1180px, 100% - 40px); margin-inline: auto; }
     :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 6px; }
 
-    /* Section tones: the page alternates dark and light, like a product page, instead of one long black sheet */
+    /* One dark base throughout; each section is set apart by its own accent glow, taken from Halo's category colours */
     section { padding: 104px 0; }
-    .tone-2 { background: var(--ink-2); }
-    .light { background: var(--paper); color: #1d1d1f; --muted: #6e6e73; --line: rgba(0, 0, 0, .1); }
+    /* The glow sits inside the section and fades out before either edge, so neighbouring tints never meet in a seam */
+    .tint { --accent: 123, 108, 246; background: radial-gradient(65% 42% at 50% 46%, rgba(var(--accent), .15), transparent 100%), var(--ink); }
+    .tint.blue { --accent: 10, 132, 255; }
+    .tint.teal { --accent: 48, 176, 199; }
+    .tint.pink { --accent: 255, 111, 181; }
+    .tint.green { --accent: 48, 209, 88; }
+    .tint.clay { --accent: 217, 120, 87; }
+    .tint.indigo { --accent: 94, 92, 230; }
     .head { max-width: 660px; margin-bottom: 48px; }
     .head h2 { font-size: clamp(34px, 4.4vw, 54px); }
     .head p { margin-top: 16px; color: var(--muted); font-size: 18.5px; }
     .center { text-align: center; margin-inline: auto; }
 
-    /* The wallpaper's colours, softly behind the hero and the closing */
-    .aurora { position: relative; overflow: hidden; isolation: isolate; }
-    .aurora::before {
-      content: ''; position: absolute; inset: -30% -10% auto; height: 120%; z-index: -1;
-      background:
-        radial-gradient(40% 50% at 18% 30%, rgba(240, 112, 90, .28), transparent 70%),
-        radial-gradient(38% 45% at 62% 18%, rgba(123, 108, 246, .32), transparent 70%),
-        radial-gradient(40% 50% at 92% 55%, rgba(95, 174, 63, .2), transparent 70%);
-      filter: blur(20px);
-    }
 
     /* Nav */
     .nav { position: sticky; top: 0; z-index: 20; background: rgba(11, 12, 16, .72); backdrop-filter: saturate(160%) blur(18px); -webkit-backdrop-filter: saturate(160%) blur(18px); border-bottom: 1px solid rgba(255, 255, 255, .08); }
@@ -87,8 +80,7 @@
     kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 1.9em; height: 1.75em; padding: 0 .5em; border-radius: .38em; font: 500 .82em var(--mono); color: var(--text); background: linear-gradient(#2c2e36, #1e2027); border: 1px solid rgba(255, 255, 255, .14); border-bottom-width: 3px; box-shadow: 0 2px 6px rgba(0, 0, 0, .5); vertical-align: .1em; }
 
     .shot { border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: #000; box-shadow: 0 24px 60px -24px rgba(0, 0, 0, .7); }
-    .light .shot { box-shadow: 0 18px 44px -18px rgba(0, 0, 0, .35); }
-    .shot video, .shot img { width: 100%; height: auto; }
+        .shot video, .shot img { width: 100%; height: auto; }
 
     /* Hero */
     .hero { padding: 88px 0 104px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: center; }
@@ -122,12 +114,12 @@
 
     /* Rings */
     .rings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-    .rings article { background: var(--card); border-radius: 20px; padding: 28px 26px 30px; box-shadow: 0 1px 2px rgba(0, 0, 0, .04); }
+    .rings article { background: rgba(255, 255, 255, .035); border: 1px solid var(--line); border-radius: 20px; padding: 28px 26px 30px; }
     /* The render's shadow is clipped square at the image edge; fade it out radially */
     .rings img { width: 64%; margin: 0 auto 22px; -webkit-mask-image: radial-gradient(circle, #000 60%, transparent 71%); mask-image: radial-gradient(circle, #000 60%, transparent 71%); }
     .rings h3 { font-size: 20px; letter-spacing: -0.02em; }
     .rings p { margin-top: 8px; color: var(--muted); font-size: 15.5px; }
-    .light .note { margin-top: 18px; font-size: 14px; color: var(--muted); }
+    .note { margin-top: 18px; font-size: 14px; color: var(--muted); }
     @media (max-width: 920px) { .rings { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 600px) { .rings { grid-template-columns: 1fr; } }
 
@@ -141,8 +133,8 @@
 
     /* Privacy */
     .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-    .three div { background: var(--card); border-radius: 20px; padding: 28px 26px; }
-    .three svg { width: 26px; height: 26px; color: var(--blue); margin-bottom: 18px; }
+    .three div { background: rgba(255, 255, 255, .035); border: 1px solid var(--line); border-radius: 20px; padding: 28px 26px; }
+    .three svg { width: 26px; height: 26px; color: rgb(var(--accent)); margin-bottom: 18px; }
     .three h3 { font-size: 19px; letter-spacing: -0.015em; }
     .three p { margin-top: 10px; color: var(--muted); font-size: 15.5px; }
     @media (max-width: 760px) { .three { grid-template-columns: 1fr; } }
@@ -199,7 +191,7 @@
   </header>
 
   <main id="top">
-    <div class="aurora">
+    <div class="tint">
       <div class="wrap hero">
         <div>
           <h1>One shortcut.<br>Every app.</h1>
@@ -219,7 +211,7 @@
       </div>
     </div>
 
-    <section id="apps" class="tone-2">
+    <section id="apps" class="tint blue">
       <div class="wrap">
         <div class="head">
           <h2>One ring, made for each app.</h2>
@@ -237,7 +229,7 @@
       </div>
     </section>
 
-    <section id="rings" class="light">
+    <section id="rings" class="tint teal">
       <div class="wrap">
         <div class="head">
           <h2>A ring for whatever you're pointing at.</h2>
@@ -255,7 +247,7 @@
       </div>
     </section>
 
-    <section>
+    <section class="tint pink">
       <div class="wrap">
         <div class="head">
           <h2>Make it yours. Make it comfortable.</h2>
@@ -270,7 +262,7 @@
       </div>
     </section>
 
-    <section class="light">
+    <section class="tint green">
       <div class="wrap">
         <div class="head"><h2>Yours, on your Mac.</h2></div>
         <div class="three">
@@ -290,7 +282,7 @@
       </div>
     </section>
 
-    <section id="install" class="tone-2">
+    <section id="install" class="tint clay">
       <div class="wrap">
         <div class="head">
           <h2>Install in a minute.</h2>
@@ -305,7 +297,7 @@
       </div>
     </section>
 
-    <section id="faq" class="light">
+    <section id="faq" class="tint indigo">
       <div class="wrap faq">
         <div class="head"><h2>Questions.</h2></div>
         <div>
@@ -321,7 +313,7 @@
       </div>
     </section>
 
-    <div class="aurora closing">
+    <div class="tint closing">
       <div class="wrap">
         <img src="media/icon.png" alt="">
         <h2>Hold. Flick. Done.</h2>
