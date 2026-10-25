@@ -2,6 +2,8 @@
 
 [![Downloads](https://img.shields.io/github/downloads/nakulpatel0306/halo/total?label=downloads)](https://github.com/nakulpatel0306/halo/releases)
 
+**[Download Halo](https://github.com/nakulpatel0306/halo/releases/latest/download/Halo.zip)** for macOS 14 or later, or see it in action on the **[website](https://nakulpatel0306.github.io/halo/)**.
+
 Hold **⌥ Space** anywhere, flick toward an action and let go. Halo opens a ring of
 actions at your cursor that fits whatever you're pointing at: Claude rewrites for
 highlighted text, Filee-style conversions for files in Finder, and a ring of shortcuts
@@ -14,7 +16,7 @@ API bill.
 
 - **Stack:** Swift, SwiftUI, AppKit, Vision, PDFKit, AVFoundation, the `claude` CLI (no external libraries)
 - **Platforms:** macOS 14+, Apple silicon and Intel
-- **State:** Complete
+- **State:** Complete, and open to issues and pull requests
 
 ## Features
 
@@ -59,7 +61,10 @@ API bill.
 │   │   ├── ChatAI.swift         # Prompts for Explain and Sum Up Chat in Messages
 │   │   ├── TextTools.swift      # Case, sort, JSON, Base64, URL and other local tools
 │   │   ├── ProfilePresets.swift # App rings and their shortcuts
-│   │   ├── Settings.swift       # Settings model and storage
+│   │   ├── Settings.swift       # Settings model and storage, salvaged rather than reset
+│   │   ├── KeyLayout.swift      # Built-in shortcuts on Dvorak, AZERTY and other layouts
+│   │   ├── Shell.swift          # Runs tools with the user's own shell PATH
+│   │   ├── Updates.swift        # Checks GitHub for a newer release
 │   │   └── RingGeometry.swift   # Slice hit-testing and ring sizing
 │   └── Halo/                    # The app
 │       ├── RingController.swift # Opens the ring, tracks the pointer, sub-rings
@@ -69,6 +74,7 @@ API bill.
 │       ├── MessagesReader.swift # Reads the open chat and the draft in Messages
 │       └── Settings/            # Guide, Ring Editor, App Rings and the other panes
 ├── Tests/HaloKitTests/          # Conversions, prompts, rings, settings and more
+├── site/                        # The website, deployed to GitHub Pages
 └── scripts/
     ├── build-app.sh             # Builds Halo.app, --install puts it in /Applications
     ├── make-icon.swift          # Draws the app icon
@@ -77,15 +83,36 @@ API bill.
 
 ## Install
 
-1. Download **Halo.zip** from the [latest release](https://github.com/nakulpatel0306/halo/releases/latest),
-   unzip it and drag **Halo.app** into Applications.
-2. Open it. Halo isn't notarized, so macOS will say it can't verify the developer: go to
+1. Download **[Halo.zip](https://github.com/nakulpatel0306/halo/releases/latest/download/Halo.zip)**,
+   unzip it and drag **Halo.app** into **Applications**. Open it from there: run from
+   Downloads, macOS uses a temporary copy and its permissions don't stick.
+2. Halo isn't notarized, so the first time macOS says it can't verify the developer. Go to
    System Settings > Privacy & Security, scroll down and click **Open Anyway**.
 3. Follow the Guide that opens. It checks off each step as you go:
    - Allow Halo in Privacy & Security > Accessibility
-   - Install [Claude Code](https://claude.com/claude-code) and sign in once by running `claude`
-     (or paste an Anthropic API key in Settings > Claude instead)
+   - For Claude actions, install [Claude Code](https://claude.com/claude-code) and sign in once by
+     running `claude` (or paste an Anthropic API key in Settings > Claude instead). Everything
+     else in Halo works without it.
    - Click OK when macOS asks if Halo can control Finder
+
+## Updating
+
+Halo checks GitHub once a day and shows **Update to Halo …** in its menu when there's a new
+version; **Check for Updates…** asks right away. To update, quit Halo, replace Halo.app in
+Applications with the new one, then turn Halo off and on again in Privacy & Security >
+Accessibility (macOS treats each build as a new app). Your settings carry over.
+
+## Uninstall
+
+1. Turn off **Open at login** in Halo's Guide, then quit Halo from its menu.
+2. Drag Halo.app from Applications to the Trash.
+3. To remove its settings and permissions too, run:
+   ```bash
+   defaults delete dev.nakulpatel.halo
+   tccutil reset All dev.nakulpatel.halo
+   security delete-generic-password -s dev.nakulpatel.halo 2>/dev/null
+   ```
+   The last line removes the Anthropic API key, if you saved one.
 
 ## Running Locally
 
