@@ -14,10 +14,8 @@
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#0b0c10">
-  <link rel="icon" href="media/icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="icon" href="media/mark.svg" type="image/svg+xml">
+  <link rel="icon" href="media/favicon.png" type="image/png">
   <style>
     :root {
       --ink: #0b0c10;
@@ -29,15 +27,15 @@
       --clay: #d97857;
       --teal: #30b0c7;
       --cyan: #64d2ff;
-      --sans: 'Geist', -apple-system, system-ui, sans-serif;
-      --mono: 'Geist Mono', ui-monospace, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body { margin: 0; background: var(--ink); color: var(--text); font: 17px/1.6 var(--sans); -webkit-font-smoothing: antialiased; }
     a { color: inherit; }
     img, video { display: block; max-width: 100%; }
-    h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.035em; line-height: 1.05; }
+    h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.022em; line-height: 1.05; }
     p { margin: 0; }
     button { font: inherit; color: inherit; }
     .wrap { width: min(1180px, 100% - 40px); margin-inline: auto; }
@@ -58,28 +56,39 @@
     .head p { margin-top: 16px; color: var(--muted); font-size: 18.5px; }
     .center { text-align: center; margin-inline: auto; }
 
+    /* Glass: a light rim that catches at the top-left, a top highlight, and a sheen that follows the pointer */
+    .glass { position: relative; background: linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .015)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), 0 22px 44px -26px rgba(0, 0, 0, .8); }
+    .glass::before, .shot::before { content: ''; position: absolute; inset: 0; z-index: 3; border-radius: inherit; padding: 1px; pointer-events: none; background: linear-gradient(140deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 38%, rgba(255, 255, 255, 0) 64%, rgba(255, 255, 255, .2)), rgba(255, 255, 255, .08); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
+    .glass::after { content: ''; position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none; background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, .08), transparent 62%); opacity: 0; transition: opacity .3s; }
+    .glass:hover::after { opacity: 1; }
+
 
     /* Nav */
-    .nav { position: sticky; top: 0; z-index: 20; background: rgba(11, 12, 16, .72); backdrop-filter: saturate(160%) blur(18px); -webkit-backdrop-filter: saturate(160%) blur(18px); border-bottom: 1px solid rgba(255, 255, 255, .08); }
-    .nav .wrap { display: flex; align-items: center; height: 60px; gap: 28px; }
-    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 600; letter-spacing: -0.02em; }
-    .brand img { width: 26px; height: 26px; }
+    .nav { position: sticky; top: 12px; z-index: 20; width: min(1180px, 100% - 24px); margin: 12px auto 0; border-radius: 999px; background: linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .02)), rgba(16, 17, 23, .6); backdrop-filter: saturate(170%) blur(22px); -webkit-backdrop-filter: saturate(170%) blur(22px); }
+    .nav .wrap { display: flex; align-items: center; width: auto; height: 56px; gap: 28px; padding: 0 11px 0 18px; }
+    .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+    .brand img { width: 34px; height: 34px; }
     .nav nav { display: flex; align-items: center; gap: 26px; margin-left: auto; font-size: 14px; line-height: 1; }
     .nav nav a { color: #a1a1aa; text-decoration: none; }
     .nav nav a:hover { color: var(--text); }
-    .nav nav a.get { color: #fff; background: var(--blue); padding: 9px 15px; border-radius: 999px; font-weight: 500; }
+    .nav nav a.get { color: #fff; background: linear-gradient(180deg, #2b95ff, #0a7cf5); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35); padding: 10px 16px; border-radius: 999px; font-weight: 500; }
+    /* The pill is set apart by its blur alone; a rim here read as a white outline */
+    .nav.glass { box-shadow: 0 12px 32px -18px rgba(0, 0, 0, .8); }
+    .nav.glass::before { content: none; }
     @media (max-width: 720px) { .nav nav a:not(.get) { display: none; } }
 
     /* Buttons and keycaps */
     .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
-    .button { display: inline-flex; align-items: center; gap: 9px; padding: 13px 22px; border-radius: 999px; background: var(--blue); color: #fff; font-weight: 500; text-decoration: none; line-height: 1; }
-    .button:hover { background: #2490ff; }
+    .button { display: inline-flex; align-items: center; gap: 9px; padding: 13px 22px; border-radius: 999px; background: linear-gradient(180deg, #2b95ff, #0a7cf5); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), inset 0 -1px 0 rgba(0, 0, 0, .2), 0 10px 24px -12px rgba(0, 0, 0, .7); color: #fff; font-weight: 500; text-decoration: none; line-height: 1; }
+    .button:hover { background: linear-gradient(180deg, #45a3ff, #1888ff); }
     .button svg { width: 16px; height: 16px; }
     .quiet { text-decoration: none; padding: 13px 4px; line-height: 1; border-bottom: 1px solid transparent; }
     .quiet:hover { border-bottom-color: var(--muted); }
-    kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 1.9em; height: 1.75em; padding: 0 .5em; border-radius: .38em; font: 500 .82em var(--mono); color: var(--text); background: linear-gradient(#2c2e36, #1e2027); border: 1px solid rgba(255, 255, 255, .14); border-bottom-width: 3px; box-shadow: 0 2px 6px rgba(0, 0, 0, .5); vertical-align: .1em; }
+    kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 1.9em; height: 1.75em; padding: 0 .5em; border-radius: .38em; font: 500 .82em var(--mono); color: var(--text); background: linear-gradient(#2c2e36, #1e2027); border: 1px solid rgba(255, 255, 255, .14); border-bottom-width: 3px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18), 0 2px 6px rgba(0, 0, 0, .5); vertical-align: .1em; }
 
-    .shot { border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: #000; box-shadow: 0 24px 60px -24px rgba(0, 0, 0, .7); }
+    .shot { position: relative; border-radius: 16px; overflow: hidden; background: #000; box-shadow: 0 24px 60px -24px rgba(0, 0, 0, .7); }
+    /* Stood on a polished floor; the reflection falls into the section's bottom padding */
+    .reflect { -webkit-box-reflect: below 6px linear-gradient(transparent 76%, rgba(255, 255, 255, .16)); }
         .shot video, .shot img { width: 100%; height: auto; }
 
     /* Hero */
@@ -93,14 +102,14 @@
     /* Showcase carousel */
     .tabs { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
     .tabs::-webkit-scrollbar { display: none; }
-    .tab { position: relative; flex: none; display: flex; align-items: center; gap: 9px; padding: 8px 14px 8px 8px; border-radius: 14px; border: 1px solid var(--line); background: transparent; cursor: pointer; color: var(--muted); font-size: 14.5px; font-weight: 500; overflow: hidden; }
+    .tab { flex: none; display: flex; align-items: center; gap: 9px; padding: 8px 14px 8px 8px; border-radius: 14px; border: 0; cursor: pointer; color: var(--muted); font-size: 14.5px; font-weight: 500; overflow: hidden; }
     .tab img { width: 28px; height: 28px; }
-    .tab[aria-selected="true"] { color: var(--text); background: var(--raised); border-color: rgba(255, 255, 255, .16); }
+    .tab[aria-selected="true"] { color: var(--text); background: linear-gradient(180deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, .05)); }
     .tab .bar { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--blue); }
     .stage { position: relative; aspect-ratio: 16 / 9; }
     .stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .35s; }
     .stage video.on { opacity: 1; }
-    .step { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .25); background: rgba(20, 20, 26, .55); backdrop-filter: blur(10px); cursor: pointer; display: grid; place-items: center; z-index: 2; }
+    .step { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .22); background: rgba(20, 20, 26, .5); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); cursor: pointer; display: grid; place-items: center; z-index: 2; }
     .step:hover { background: rgba(20, 20, 26, .8); }
     .step svg { width: 18px; height: 18px; }
     .step.prev { left: 16px; }
@@ -109,12 +118,12 @@
     .caption h3 { font-size: 26px; letter-spacing: -0.025em; }
     .caption p { margin-top: 8px; color: var(--muted); font-size: 16.5px; max-width: 44em; }
     .chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; max-width: 380px; }
-    .chips span { font-size: 13px; padding: 5px 10px; border-radius: 999px; background: var(--raised); border: 1px solid var(--line); color: #c7c7cf; }
+    .chips span { font-size: 13px; padding: 5px 10px; border-radius: 999px; background: rgba(255, 255, 255, .06); border: 1px solid var(--line); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1); color: #c7c7cf; }
     @media (max-width: 760px) { .caption { grid-template-columns: 1fr; } .chips { justify-content: flex-start; } .step { width: 36px; height: 36px; } }
 
     /* Rings */
     .rings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-    .rings article { background: rgba(255, 255, 255, .035); border: 1px solid var(--line); border-radius: 20px; padding: 28px 26px 30px; }
+    .rings article { border-radius: 20px; padding: 28px 26px 30px; }
     /* The render's shadow is clipped square at the image edge; fade it out radially */
     .rings img { width: 64%; margin: 0 auto 22px; -webkit-mask-image: radial-gradient(circle, #000 60%, transparent 71%); mask-image: radial-gradient(circle, #000 60%, transparent 71%); }
     .rings h3 { font-size: 20px; letter-spacing: -0.02em; }
@@ -133,7 +142,7 @@
 
     /* Privacy */
     .three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-    .three div { background: rgba(255, 255, 255, .035); border: 1px solid var(--line); border-radius: 20px; padding: 28px 26px; }
+    .three div { border-radius: 20px; padding: 28px 26px; }
     .three svg { width: 26px; height: 26px; color: rgb(var(--accent)); margin-bottom: 18px; }
     .three h3 { font-size: 19px; letter-spacing: -0.015em; }
     .three p { margin-top: 10px; color: var(--muted); font-size: 15.5px; }
@@ -141,8 +150,8 @@
 
     /* Install */
     .steps { margin: 0; padding: 0; list-style: none; counter-reset: step; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-    .steps li { counter-increment: step; background: var(--raised); border: 1px solid var(--line); border-radius: 18px; padding: 24px 22px 26px; }
-    .steps li::before { content: counter(step); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--blue); color: #fff; font: 500 14px var(--mono); margin-bottom: 18px; }
+    .steps li { counter-increment: step; border-radius: 18px; padding: 24px 22px 26px; }
+    .steps h3::before { content: counter(step); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(180deg, #2b95ff, #0a7cf5); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35); color: #fff; font: 500 14px var(--mono); margin-bottom: 18px; }
     .steps h3 { font-size: 17.5px; letter-spacing: -0.01em; line-height: 1.3; }
     .steps p { margin-top: 8px; font-size: 14.5px; color: var(--muted); }
     .steps code { font: 500 13px var(--mono); color: var(--text); background: #262a33; padding: 1px 6px; border-radius: 5px; }
@@ -161,7 +170,7 @@
     @media (max-width: 860px) { .faq { grid-template-columns: 1fr; gap: 24px; } }
 
     .closing { text-align: center; padding: 130px 0 140px; }
-    .closing img { width: 84px; height: 84px; margin: 0 auto 28px; }
+    .closing img { width: 84px; height: 84px; margin: 0 auto 52px; -webkit-box-reflect: below 4px linear-gradient(transparent 52%, rgba(255, 255, 255, .28)); }
     .closing h2 { font-size: clamp(40px, 5.5vw, 68px); }
     .closing p { margin: 16px 0 34px; color: #b4b4bc; font-size: 19px; }
     .closing .actions { justify-content: center; }
@@ -176,9 +185,9 @@
   </style>
 </head>
 <body>
-  <header class="nav">
+  <header class="nav glass">
     <div class="wrap">
-      <a class="brand" href="#top"><img src="media/icon.png" alt="">Halo</a>
+      <a class="brand" href="#top"><img src="media/mark.svg" alt="">Halo</a>
       <nav aria-label="Main">
         <a href="#apps">In action</a>
         <a href="#rings">Rings</a>
@@ -205,7 +214,7 @@
           </div>
           <p class="meta" id="version">Free and open source. macOS 14 or later, Apple silicon and Intel.</p>
         </div>
-        <div class="shot">
+        <div class="shot reflect">
           <video data-src="media/hero.mp4" poster="media/hero.jpg" muted loop playsinline aria-label="Halo rewriting a draft email in Mail with Claude"></video>
         </div>
       </div>
@@ -236,12 +245,12 @@
           <p>Each action keeps its direction, like numbers on a watch, so after a day you flick without looking.</p>
         </div>
         <div class="rings">
-          <article><img src="media/ring-text.png" alt="The Text ring" loading="lazy"><h3>Highlighted text</h3><p>Professional, Fix Grammar, Shorter, Explain, Reply, Study Notes, Flashcards and a commit message from a diff.</p></article>
-          <article><img src="media/ring-files.png" alt="The Files ring" loading="lazy"><h3>Files in Finder</h3><p>Convert, Compress, Copy Text from images, Copy for AI, Merge, Zip, Open in Cursor.</p></article>
-          <article><img src="media/ring-everywhere.png" alt="The Everywhere ring" loading="lazy"><h3>Everywhere else</h3><p>Screenshot, Grab Text from the screen, Pick Color, Paste Plain, Keep Awake.</p></article>
-          <article><img src="media/ring-vscode.png" alt="The VS Code ring" loading="lazy"><h3>VS Code and Cursor</h3><p>Commands, Go to File, Terminal, Comment, Format, Source Control, pressing the editor's own shortcuts.</p></article>
-          <article><img src="media/ring-ghostty.png" alt="The Ghostty ring" loading="lazy"><h3>Ghostty</h3><p>Start Claude Code in one flick, split right or down, zoom a split, jump between prompts.</p></article>
-          <article><img src="media/ring-messages.png" alt="The Messages ring" loading="lazy"><h3>Messages</h3><p>Ask what their last text meant, sum up the chat, or make your reply funnier, friendlier or more serious.</p></article>
+          <article class="glass"><img src="media/ring-text.png" alt="The Text ring" loading="lazy"><h3>Highlighted text</h3><p>Professional, Fix Grammar, Shorter, Explain, Reply, Study Notes, Flashcards and a commit message from a diff.</p></article>
+          <article class="glass"><img src="media/ring-files.png" alt="The Files ring" loading="lazy"><h3>Files in Finder</h3><p>Convert, Compress, Copy Text from images, Copy for AI, Merge, Zip, Open in Cursor.</p></article>
+          <article class="glass"><img src="media/ring-everywhere.png" alt="The Everywhere ring" loading="lazy"><h3>Everywhere else</h3><p>Screenshot, Grab Text from the screen, Pick Color, Paste Plain, Keep Awake.</p></article>
+          <article class="glass"><img src="media/ring-vscode.png" alt="The VS Code ring" loading="lazy"><h3>VS Code and Cursor</h3><p>Commands, Go to File, Terminal, Comment, Format, Source Control, pressing the editor's own shortcuts.</p></article>
+          <article class="glass"><img src="media/ring-ghostty.png" alt="The Ghostty ring" loading="lazy"><h3>Ghostty</h3><p>Start Claude Code in one flick, split right or down, zoom a split, jump between prompts.</p></article>
+          <article class="glass"><img src="media/ring-messages.png" alt="The Messages ring" loading="lazy"><h3>Messages</h3><p>Ask what their last text meant, sum up the chat, or make your reply funnier, friendlier or more serious.</p></article>
         </div>
         <p class="note">Also ready-made: Chrome and Safari, Notion, Obsidian and Zoom. Add a ring for any other app in a minute.</p>
       </div>
@@ -266,15 +275,15 @@
       <div class="wrap">
         <div class="head"><h2>Yours, on your Mac.</h2></div>
         <div class="three">
-          <div>
+          <div class="glass">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
             <h3>Local by default</h3><p>Text tools and file conversions run on your Mac with macOS's own converters. Results are saved next to the original, never over it.</p>
           </div>
-          <div>
+          <div class="glass">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.1 5.4L19.5 10.5l-5.4 2.1L12 18l-2.1-5.4L4.5 10.5l5.4-2.1z"/></svg>
             <h3>Claude only when you ask</h3><p>Claude actions send only what you selected, through your own Claude Code login or API key. Nothing else leaves your Mac.</p>
           </div>
-          <div>
+          <div class="glass">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
             <h3>No account, no tracking</h3><p>No sign-up and no analytics. The only other request is a daily check on GitHub for a new version.</p>
           </div>
@@ -289,10 +298,10 @@
           <p>Halo is free and isn't on the App Store, so there's one extra click the first time.</p>
         </div>
         <ol class="steps">
-          <li><h3>Move it to Applications</h3><p><a href="https://github.com/nakulpatel0306/halo/releases/latest/download/Halo.zip">Download Halo.zip</a>, unzip it, drag Halo.app into Applications and open it from there.</p></li>
-          <li><h3>Click Open Anyway</h3><p>Halo isn't notarized, so macOS asks first. In System Settings › Privacy &amp; Security, click Open Anyway. Once.</p></li>
-          <li><h3>Follow the Guide</h3><p>It ticks off each step: allow Accessibility, then click OK when macOS asks if Halo can control Finder.</p></li>
-          <li><h3>Sign in to Claude, if you like</h3><p>For the Claude actions, run <code>claude</code> once to sign in, or paste your own API key. Everything else works without it.</p></li>
+          <li class="glass"><h3>Move it to Applications</h3><p><a href="https://github.com/nakulpatel0306/halo/releases/latest/download/Halo.zip">Download Halo.zip</a>, unzip it, drag Halo.app into Applications and open it from there.</p></li>
+          <li class="glass"><h3>Click Open Anyway</h3><p>Halo isn't notarized, so macOS asks first. In System Settings › Privacy &amp; Security, click Open Anyway. Once.</p></li>
+          <li class="glass"><h3>Follow the Guide</h3><p>It ticks off each step: allow Accessibility, then click OK when macOS asks if Halo can control Finder.</p></li>
+          <li class="glass"><h3>Sign in to Claude, if you like</h3><p>For the Claude actions, run <code>claude</code> once to sign in, or paste your own API key. Everything else works without it.</p></li>
         </ol>
       </div>
     </section>
@@ -385,7 +394,7 @@
     })
     const buttons = slides.map((s, i) => {
       const b = document.createElement('button')
-      b.className = 'tab'
+      b.className = 'tab glass'
       b.type = 'button'
       b.role = 'tab'
       b.innerHTML = `<img src="media/app-${s.icon}.png" alt="">${s.app}<i class="bar"></i>`
@@ -441,6 +450,15 @@
     }, { threshold: 0.35 }).observe(stage)
     if (still) videos.forEach((v) => { v.controls = true })
     show(0)
+
+    // Glass catches the light where the pointer is
+    document.addEventListener('pointermove', (e) => {
+      const g = e.target.closest?.('.glass')
+      if (!g) return
+      const r = g.getBoundingClientRect()
+      g.style.setProperty('--mx', `${e.clientX - r.left}px`)
+      g.style.setProperty('--my', `${e.clientY - r.top}px`)
+    })
   </script>
 </body>
 </html>
