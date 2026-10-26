@@ -169,7 +169,10 @@
     details p { padding: 0 36px 22px 0; color: var(--muted); font-size: 16px; }
     @media (max-width: 860px) { .faq { grid-template-columns: 1fr; gap: 24px; } }
 
-    .closing { text-align: center; padding: 130px 0 140px; }
+    .closing { position: relative; overflow: hidden; text-align: center; padding: 130px 0 140px; }
+    /* The ring itself, rising from behind the footer, its top slice lit as if mid-flick */
+    .ring-bg { position: absolute; left: 50%; top: 100%; width: min(1120px, 260vw); transform: translate(-50%, -50%); pointer-events: none; -webkit-mask-image: radial-gradient(closest-side, #000 80%, transparent); mask-image: radial-gradient(closest-side, #000 80%, transparent); }
+    .closing .wrap { position: relative; }
     .closing img { width: 84px; height: 84px; margin: 0 auto 52px; -webkit-box-reflect: below 4px linear-gradient(transparent 52%, rgba(255, 255, 255, .28)); }
     .closing h2 { font-size: clamp(40px, 5.5vw, 68px); }
     .closing p { margin: 16px 0 34px; color: #b4b4bc; font-size: 19px; }
@@ -323,6 +326,7 @@
     </section>
 
     <div class="tint closing">
+        <svg class="ring-bg" viewBox="172 172 680 680" aria-hidden="true"><path d="M642.0 221.8A318 318 0 0 1 802.2 382.0L654.3 443.3A158 158 0 0 0 580.7 369.7ZM809.1 398.7A318 318 0 0 1 809.1 625.3L661.2 564.1A158 158 0 0 0 661.2 459.9ZM802.2 642.0A318 318 0 0 1 642.0 802.2L580.7 654.3A158 158 0 0 0 654.3 580.7ZM625.3 809.1A318 318 0 0 1 398.7 809.1L459.9 661.2A158 158 0 0 0 564.1 661.2ZM382.0 802.2A318 318 0 0 1 221.8 642.0L369.7 580.7A158 158 0 0 0 443.3 654.3ZM214.9 625.3A318 318 0 0 1 214.9 398.7L362.8 459.9A158 158 0 0 0 362.8 564.1ZM221.8 382.0A318 318 0 0 1 382.0 221.8L443.3 369.7A158 158 0 0 0 369.7 443.3Z" fill="rgba(255,255,255,.025)" stroke="rgba(255,255,255,.09)" stroke-width="1.5"/><path d="M398.7 214.9A318 318 0 0 1 625.3 214.9L564.1 362.8A158 158 0 0 0 459.9 362.8Z" fill="rgba(10,132,255,.1)" stroke="rgba(100,180,255,.22)" stroke-width="1.5"/><circle cx="512" cy="512" r="118" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="1.5"/></svg>
       <div class="wrap">
         <img src="media/icon.png" alt="">
         <h2>Hold. Flick. Done.</h2>
